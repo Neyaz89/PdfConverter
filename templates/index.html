@@ -1,26 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>PDF Converter</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
   <div class="container">
     <h1>PDF Converter</h1>
-    <div class="upload-area" id="upload-area">
-      <p>Drag & drop a file or click to upload</p>
-      <input type="file" id="file-input" accept=".pdf,.doc,.docx,.jpg,.png" />
-    </div>
-    <button id="upload-btn">Convert to PDF</button>
-    <div id="result"></div>
-  </div>
 
-  <script src="script.js"></script>
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <form id="upload-form" enctype="multipart/form-data" method="POST" action="/convert">
+      <input type="file" id="file" name="file" accept=".pdf,.docx,.jpg,.jpeg,.png" required>
+      <label for="file" id="file-label">Choose a file</label>
+      <button type="submit">Convert to PDF</button>
+    </form>
+
+    <div id="loading" style="display: none;">⏳ Converting...</div>
+    <div id="message"></div>
+  </div>
+       {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="flash">
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+  <script>
+    const form = document.getElementById("upload-form");
+    const fileInput = document.getElementById("file");
+    const fileLabel = document.getElementById("file-label");
+    const message = document.getElementById("message");
+    const loading = document.getElementById("loading");
+
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files.length > 0) {
+        fileLabel.textContent = fileInput.files[0].name;
+        message.textContent = "";
+      }
+    });
+
+    form.addEventListener("submit", (e) => {
+      if (fileInput.files.length === 0) {
+        e.preventDefault();
+        message.textContent = "❗ Please select a file.";
+        return;
+      }
+      loading.style.display = "block";
+      fileLabel.textContent = "Uploading...";
+    });
+  </script>
 </body>
 </html>

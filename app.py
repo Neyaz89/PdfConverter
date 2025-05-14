@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file, jsonify, render_template
+from flask import Flask, request, send_file, render_template, redirect, url_for, flash
 import os
 import uuid
 import threading
@@ -8,13 +8,14 @@ import img2pdf
 import subprocess
 
 app = Flask(__name__)
+app.secret_key = "supersecretkey"  # Required for flash messages
 
 UPLOAD_FOLDER = "uploads"
 CONVERTED_FOLDER = "converted"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(CONVERTED_FOLDER, exist_ok=True)
 
-# Serve index.html at /
+# Serve index.html
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -23,8 +24,8 @@ def index():
 def convert_with_libreoffice(input_path, output_dir):
     try:
         subprocess.run([
-    "soffice", "--headless", "--convert-to", "pdf", "--outdir", output_dir, input_path
-   ], check=True)
+            "soffice", "--headless", "--convert-to", "pdf", "--outdir", output_dir, input_path
+        ], check=True)
         base = os.path.splitext(os.path.basename(input_path))[0]
         return os.path.join(output_dir, f"{base}.pdf")
     except subprocess.CalledProcessError as e:
@@ -34,11 +35,13 @@ def convert_with_libreoffice(input_path, output_dir):
 @app.route("/convert", methods=["POST"])
 def convert_file():
     if "file" not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
+        flash("No file uploaded.")
+        return redirect(url_for("index"))
 
     file = request.files["file"]
     if file.filename == "":
-        return jsonify({"error": "No selected file"}), 400
+        flash("No file selected.")
+        return redirect(url_for("index"))
 
     filename = secure_filename(file.filename)
     file_ext = filename.rsplit(".", 1)[-1].lower()
@@ -59,13 +62,16 @@ def convert_file():
             return send_file(file_path, as_attachment=True, download_name="converted.pdf")
 
         else:
-            return jsonify({"error": "Unsupported file type"}), 400
+            flash("Unsupported file type.")
+            return redirect(url_for("index"))
 
         return send_file(output_path, as_attachment=True, download_name="converted.pdf")
 
     except Exception as e:
         print("Conversion error:", e)
-        return jsonify({"error": str(e)}), 500
+        flash("Error converting file. Please try again.")
+        return redirect(url_for("index"))
+
     finally:
         try:
             os.remove(file_path)
@@ -86,10 +92,10 @@ def cleanup_folder(folder, max_age_seconds=300):
                     print(f"Failed to delete {path}: {e}")
         time.sleep(60)
 
-# Start cleanup threads for uploads and converted folders
+# Start cleanup threads
 threading.Thread(target=cleanup_folder, args=(UPLOAD_FOLDER,), daemon=True).start()
 threading.Thread(target=cleanup_folder, args=(CONVERTED_FOLDER,), daemon=True).start()
 
-# Use 0.0.0.0 and PORT env for Render deployment
+# Render-friendly start
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)), debug=True)

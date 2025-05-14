@@ -1,107 +1,80 @@
-const uploadBox = document.getElementById("upload-area");
-const fileInput = document.getElementById("file-input");
-const browseBtn = document.getElementById("browse-btn");
-const fileList = document.getElementById("file-list");
-const convertBtn = document.getElementById("convert-btn");
-const mergeBtn = document.getElementById("merge-btn");
-const loading = document.getElementById("loading");
-const resultDiv = document.getElementById("result");
+let selectedFile = null;
+let currentConversion = 'convert';
 
-let selectedFiles = [];
-
-// Click handlers
-uploadBox.addEventListener("click", () => fileInput.click());
-browseBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  fileInput.click();
-});
-
-fileInput.addEventListener("change", () => {
-  selectedFiles = Array.from(fileInput.files);
-  updateFileList();
-});
-
-uploadBox.addEventListener("dragover", (e) => {
-  e.preventDefault();
-  uploadBox.style.background = "#f0f0f0";
-});
-
-uploadBox.addEventListener("dragleave", () => {
-  uploadBox.style.background = "white";
-});
-
-uploadBox.addEventListener("drop", (e) => {
-  e.preventDefault();
-  uploadBox.style.background = "white";
-  selectedFiles = Array.from(e.dataTransfer.files);
-  updateFileList();
-});
-
-function updateFileList() {
-  fileList.innerHTML = "";
-  selectedFiles.forEach(file => {
-    const li = document.createElement("li");
-    li.textContent = file.name;
-    fileList.appendChild(li);
-  });
+function setConversionType(type) {
+  currentConversion = type;
 }
 
-// Convert individually
-convertBtn.addEventListener("click", async () => {
-  if (selectedFiles.length === 0) {
-    alert("Please select at least one file.");
-    return;
-  }
+const dropArea = document.getElementById('drop-area');
 
-  loading.style.display = "block";
-  resultDiv.innerHTML = "";
-
-  for (const file of selectedFiles) {
-    const formData = new FormData();
-    formData.append("file", file);
-    const response = await fetch("/convert", {
-      method: "POST",
-      body: formData,
-    });
-
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = file.name.replace(/\.[^/.]+$/, "") + ".pdf";
-    link.textContent = `Download ${link.download}`;
-    resultDiv.appendChild(link);
-    resultDiv.appendChild(document.createElement("br"));
-  }
-
-  loading.style.display = "none";
+['dragenter', 'dragover'].forEach(eventName => {
+  dropArea.addEventListener(eventName, e => {
+    e.preventDefault();
+    dropArea.classList.add('dragover');
+  });
 });
 
-// Merge into one
-mergeBtn.addEventListener("click", async () => {
-  if (selectedFiles.length === 0) {
-    alert("Please select files to merge.");
+['dragleave', 'drop'].forEach(eventName => {
+  dropArea.addEventListener(eventName, e => {
+    e.preventDefault();
+    dropArea.classList.remove('dragover');
+  });
+});
+
+dropArea.addEventListener('drop', e => {
+  const dt = e.dataTransfer;
+  const files = dt.files;
+  handleFiles(files);
+});
+
+function handleFiles(files) {
+  selectedFile = files[0];
+  const preview = document.getElementById('preview');
+  preview.innerHTML = `<p>Selected: ${selectedFile.name}</p>`;
+}
+
+function uploadFile() {
+  if (!selectedFile) {
+    alert('Please select a file to convert.');
     return;
   }
-
-  loading.style.display = "block";
-  resultDiv.innerHTML = "";
 
   const formData = new FormData();
-  selectedFiles.forEach(f => formData.append("files", f));
+  formData.append('file', selectedFile);
 
-  const response = await fetch("/merge", {
-    method: "POST",
-    body: formData,
-  });
+  const progressBar = document.getElementById('progressBar');
+  document.querySelector('.progress-container').style.display = 'block';
 
-  const blob = await response.blob();
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "merged.pdf";
-  link.textContent = "Download Merged PDF";
-  resultDiv.appendChild(link);
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', `/${currentConversion}`, true);
 
-  loading.style.display = "none";
-});
+  xhr.upload.onprogress = (e) => {
+    if (e.lengthComputable) {
+      const percent = (e.loaded / e.total) * 100;
+      progressBar.style.width = percent + '%';
+    }
+  };
+
+  xhr.onload = () => {
+    if (xhr.status === 200) {
+      const blob = new Blob([xhr.response], { type: xhr.getResponseHeader('Content-Type') });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'converted_file';
+      link.click();
+    } else {
+      alert('Conversion failed. Please try again.');
+    }
+    progressBar.style.width = '0%';
+    document.querySelector('.progress-container').style.display = 'none';
+  };
+
+  xhr.onerror = () => {
+    alert('Upload error. Please try again.');
+    progressBar.style.width = '0%';
+    document.querySelector('.progress-container').style.display = 'none';
+  };
+
+  xhr.responseType = 'blob';
+  xhr.send(formData);
+}

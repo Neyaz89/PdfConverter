@@ -1,31 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Neyaz's File Converter</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Neyaz's File Converter</title>
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
-    <div class="container">
-        <h1>Neyaz's File Converter</h1>
-        <div class="converter">
-            <form action="/convert" method="post" enctype="multipart/form-data">
-                <label for="file">Upload File:</label>
-                <input type="file" name="file" id="file" required>
-                <button type="submit" class="btn">Convert to PDF</button>
-            </form>
-            <form action="/pdf-to-jpg" method="post" enctype="multipart/form-data">
-                <label for="file">Upload PDF:</label>
-                <input type="file" name="file" id="file" required>
-                <button type="submit" class="btn">Convert PDF to JPG</button>
-            </form>
-            <form action="/pdf-to-docx" method="post" enctype="multipart/form-data">
-                <label for="file">Upload PDF:</label>
-                <input type="file" name="file" id="file" required>
-                <button type="submit" class="btn">Convert PDF to DOCX</button>
-            </form>
-        </div>
-    </div>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <header>
+    <h1>Neyaz's File Converter</h1>
+  </header>
+
+  <section class="tools-container">
+    <button class="tool-btn" onclick="setConversionType('convert')">📄 Convert to PDF</button>
+    <button class="tool-btn" onclick="setConversionType('pdf-to-jpg')">🖼️ PDF to JPG</button>
+    <button class="tool-btn" onclick="setConversionType('pdf-to-docx')">📑 PDF to DOCX</button>
+  </section>
+
+  <section class="upload-area" id="drop-area">
+    <h2>Drag & Drop Your File Here</h2>
+    <p>Or click to upload</p>
+    <input type="file" id="fileElem" accept="*" onchange="handleFiles(this.files)" hidden />
+    <button onclick="document.getElementById('fileElem').click()">Browse</button>
+  </section>
+
+  <section id="preview" class="preview-area"></section>
+
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <button class="submit-btn" onclick="uploadFile()">Convert Now</button>
+
+  <script src="/static/script.js"></script>
 </body>
 </html>

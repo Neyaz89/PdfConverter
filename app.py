@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file, redirect, url_for, flash
+from flask import Flask, render_template, request, send_file, jsonify
 from werkzeug.utils import secure_filename
 import os
 import uuid
@@ -7,6 +7,7 @@ from PIL import Image
 import img2pdf
 from pdf2image import convert_from_path
 from pdf2docx import Converter
+from fpdf import FPDF
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
@@ -27,19 +28,29 @@ def convert_with_libreoffice(input_path, output_dir):
         ], check=True)
         base = os.path.splitext(os.path.basename(input_path))[0]
         return os.path.join(output_dir, f"{base}.pdf")
-    except subprocess.CalledProcessError as e:
-        raise Exception("LibreOffice conversion failed") from e
+    except subprocess.CalledProcessError:
+        raise Exception("LibreOffice conversion failed")
 
-@app.route('/convert', methods=['POST'])
-def convert_file():
+def text_to_pdf(text_file_path, output_pdf_path):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    with open(text_file_path, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+        for line in lines:
+            pdf.cell(200, 10, txt=line.strip(), ln=True)
+
+    pdf.output(output_pdf_path)
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
     if 'file' not in request.files:
-        flash('No file uploaded.')
-        return redirect(url_for('index'))
+        return jsonify({'error': 'No file uploaded'}), 400
 
     file = request.files['file']
     if file.filename == '':
-        flash('No file selected.')
-        return redirect(url_for('index'))
+        return jsonify({'error': 'No file selected'}), 400
 
     filename = secure_filename(file.filename)
     file_ext = filename.rsplit('.', 1)[-1].lower()
@@ -52,19 +63,21 @@ def convert_file():
             output_path = os.path.join(CONVERTED_FOLDER, output_filename)
             with open(output_path, "wb") as f:
                 f.write(img2pdf.convert(file_path))
-        elif file_ext in ['docx', 'pptx', 'xlsx', 'txt']:
+        elif file_ext in ['docx', 'pptx', 'xlsx']:
             output_path = convert_with_libreoffice(file_path, CONVERTED_FOLDER)
+        elif file_ext == 'txt':
+            output_filename = f"{uuid.uuid4()}.pdf"
+            output_path = os.path.join(CONVERTED_FOLDER, output_filename)
+            text_to_pdf(file_path, output_path)
         elif file_ext == 'pdf':
             return send_file(file_path, as_attachment=True, download_name="converted.pdf")
         else:
-            flash('Unsupported file type.')
-            return redirect(url_for('index'))
+            return jsonify({'error': 'Unsupported file type'}), 400
 
         return send_file(output_path, as_attachment=True, download_name="converted.pdf")
+
     except Exception as e:
-        print("Conversion error:", e)
-        flash('Error converting file. Please try again.')
-        return redirect(url_for('index'))
+        return jsonify({'error': str(e)}), 500
     finally:
         try:
             os.remove(file_path)
@@ -74,14 +87,9 @@ def convert_file():
 @app.route('/pdf-to-jpg', methods=['POST'])
 def pdf_to_jpg():
     if 'file' not in request.files:
-        flash('No file uploaded.')
-        return redirect(url_for('index'))
+        return jsonify({'error': 'No file uploaded'}), 400
 
     file = request.files['file']
-    if file.filename == '':
-        flash('No file selected.')
-        return redirect(url_for('index'))
-
     filename = secure_filename(file.filename)
     file_path = os.path.join(UPLOAD_FOLDER, filename)
     file.save(file_path)
@@ -89,15 +97,13 @@ def pdf_to_jpg():
     try:
         images = convert_from_path(file_path)
         output_images = []
-        for i, img in enumerate(images):
+        for img in images:
             output_path = os.path.join(CONVERTED_FOLDER, f"{uuid.uuid4()}.jpg")
             img.save(output_path, 'JPEG')
             output_images.append(output_path)
-        # For simplicity, returning the first image
         return send_file(output_images[0], as_attachment=True, download_name="converted.jpg")
     except Exception as e:
-        flash('Error converting PDF to JPG.')
-        return redirect(url_for('index'))
+        return jsonify({'error': 'Failed to convert PDF to JPG'}), 500
     finally:
         try:
             os.remove(file_path)
@@ -107,14 +113,9 @@ def pdf_to_jpg():
 @app.route('/pdf-to-docx', methods=['POST'])
 def pdf_to_docx():
     if 'file' not in request.files:
-        flash('No file uploaded.')
-        return redirect(url_for('index'))
+        return jsonify({'error': 'No file uploaded'}), 400
 
     file = request.files['file']
-    if file.filename == '':
-        flash('No file selected.')
-        return redirect(url_for('index'))
-
     filename = secure_filename(file.filename)
     file_path = os.path.join(UPLOAD_FOLDER, filename)
     file.save(file_path)
@@ -128,17 +129,13 @@ def pdf_to_docx():
         cv.close()
         return send_file(output_path, as_attachment=True, download_name="converted.docx")
     except Exception as e:
-        flash('Error converting PDF to DOCX.')
-        return redirect(url_for('index'))
+        return jsonify({'error': 'PDF to DOCX conversion failed'}), 500
     finally:
         try:
             os.remove(file_path)
         except:
             pass
 
-import os
-
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))
     app.run(debug=False, host='0.0.0.0', port=port)
-

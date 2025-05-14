@@ -1,68 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>PDF Converter</title>
-  <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <title>Neyaz's File Converter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <div class="container">
-    <h1>Multi-Format PDF Converter</h1>
-
-    <form id="upload-form" enctype="multipart/form-data" method="POST" action="/convert">
-      <input type="file" id="file" name="file" required>
-      <label for="file" id="file-label">Choose a file</label>
-
-      <select id="convert_type" name="convert_type" required>
-        <option value="" disabled selected>Select Conversion Type</option>
-        <option value="text-to-pdf">Text to PDF</option>
-        <option value="image-to-pdf">Image to PDF (JPG, PNG)</option>
-        <option value="docx-to-pdf">DOCX to PDF</option>
-        <option value="pptx-to-pdf">PPTX to PDF</option>
-        <option value="pdf-to-jpg">PDF to JPG</option>
-        <option value="pdf-to-docx">PDF to DOCX</option>
-      </select>
-
-      <button type="submit">Convert</button>
-    </form>
-
-    <div id="loading" style="display: none;">⏳ Converting...</div>
-    <div id="message"></div>
-
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <div class="flash">
-        {% for message in messages %}
-          <p>{{ message }}</p>
-        {% endfor %}
-      </div>
-    {% endif %}
-    {% endwith %}
-  </div>
-
-  <script>
-    const form = document.getElementById("upload-form");
-    const fileInput = document.getElementById("file");
-    const fileLabel = document.getElementById("file-label");
-    const message = document.getElementById("message");
-    const loading = document.getElementById("loading");
-
-    fileInput.addEventListener("change", () => {
-      if (fileInput.files.length > 0) {
-        fileLabel.textContent = fileInput.files[0].name;
-        message.textContent = "";
-      }
-    });
-
-    form.addEventListener("submit", (e) => {
-      if (fileInput.files.length === 0) {
-        e.preventDefault();
-        message.textContent = "❗ Please select a file.";
-        return;
-      }
-      loading.style.display = "block";
-      fileLabel.textContent = "Uploading...";
-    });
-  </script>
+    <div class="container">
+        <h1>Neyaz's File Converter</h1>
+        <div class="converter">
+            <form action="/convert" method="post" enctype="multipart/form-data">
+                <label for="file">Upload File:</label>
+                <input type="file" name="file" id="file" required>
+                <button type="submit" class="btn">Convert to PDF</button>
+            </form>
+            <form action="/pdf-to-jpg" method="post" enctype="multipart/form-data">
+                <label for="file">Upload PDF:</label>
+                <input type="file" name="file" id="file" required>
+                <button type="submit" class="btn">Convert PDF to JPG</button>
+            </form>
+            <form action="/pdf-to-docx" method="post" enctype="multipart/form-data">
+                <label for="file">Upload PDF:</label>
+                <input type="file" name="file" id="file" required>
+                <button type="submit" class="btn">Convert PDF to DOCX</button>
+            </form>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

@@ -1,38 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>PDF Converter</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <header>
-    <h1>PDF Magic</h1>
-    <p>Select or drop your files to convert or merge to PDF</p>
-  </header>
+  <div class="container">
+    <h1>Multi-Format PDF Converter</h1>
 
-  <main>
-    <div id="upload-area" class="upload-box">
-      <p>Drag & Drop your files here or click to browse</p>
-      <input type="file" id="file-input" name="files" multiple accept=".pdf,.jpg,.jpeg,.png,.docx,.pptx,.xlsx" hidden />
-      <button id="browse-btn">Choose Files</button>
-    </div>
+    <form id="upload-form" enctype="multipart/form-data" method="POST" action="/convert">
+      <input type="file" id="file" name="file" required>
+      <label for="file" id="file-label">Choose a file</label>
 
-    <ul id="file-list"></ul>
+      <select id="convert_type" name="convert_type" required>
+        <option value="" disabled selected>Select Conversion Type</option>
+        <option value="text-to-pdf">Text to PDF</option>
+        <option value="image-to-pdf">Image to PDF (JPG, PNG)</option>
+        <option value="docx-to-pdf">DOCX to PDF</option>
+        <option value="pptx-to-pdf">PPTX to PDF</option>
+        <option value="pdf-to-jpg">PDF to JPG</option>
+        <option value="pdf-to-docx">PDF to DOCX</option>
+      </select>
 
-    <div class="actions">
-      <button id="convert-btn">Convert to PDFs</button>
-      <button id="merge-btn">Merge to Single PDF</button>
-    </div>
+      <button type="submit">Convert</button>
+    </form>
 
-    <div id="loading">⏳ Processing...</div>
-    <div id="result"></div>
-  </main>
+    <div id="loading" style="display: none;">⏳ Converting...</div>
+    <div id="message"></div>
 
-  <footer>
-    <p>&copy; 2025 PDF Magic</p>
-  </footer>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% endwith %}
+  </div>
 
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script>
+    const form = document.getElementById("upload-form");
+    const fileInput = document.getElementById("file");
+    const fileLabel = document.getElementById("file-label");
+    const message = document.getElementById("message");
+    const loading = document.getElementById("loading");
+
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files.length > 0) {
+        fileLabel.textContent = fileInput.files[0].name;
+        message.textContent = "";
+      }
+    });
+
+    form.addEventListener("submit", (e) => {
+      if (fileInput.files.length === 0) {
+        e.preventDefault();
+        message.textContent = "❗ Please select a file.";
+        return;
+      }
+      loading.style.display = "block";
+      fileLabel.textContent = "Uploading...";
+    });
+  </script>
 </body>
 </html>

@@ -1,56 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>PDF Converter</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
-  <div class="container">
-    <h1>PDF Converter</h1>
+  <header>
+    <h1>PDF Magic</h1>
+    <p>Select or drop your files to convert or merge to PDF</p>
+  </header>
 
-    <form id="upload-form" enctype="multipart/form-data" method="POST" action="/convert">
-      <input type="file" id="file" name="file" accept=".pdf,.docx,.jpg,.jpeg,.png" required>
-      <label for="file" id="file-label">Choose a file</label>
-      <button type="submit">Convert to PDF</button>
-    </form>
-
-    <div id="loading" style="display: none;">⏳ Converting...</div>
-    <div id="message"></div>
-  </div>
-       {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <div class="flash">
-      {% for message in messages %}
-        <p>{{ message }}</p>
-      {% endfor %}
+  <main>
+    <div id="upload-area" class="upload-box">
+      <p>Drag & Drop your files here or click to browse</p>
+      <input type="file" id="file-input" name="files" multiple accept=".pdf,.jpg,.jpeg,.png,.docx,.pptx,.xlsx" hidden />
+      <button id="browse-btn">Choose Files</button>
     </div>
-  {% endif %}
-{% endwith %}
 
-  <script>
-    const form = document.getElementById("upload-form");
-    const fileInput = document.getElementById("file");
-    const fileLabel = document.getElementById("file-label");
-    const message = document.getElementById("message");
-    const loading = document.getElementById("loading");
+    <ul id="file-list"></ul>
 
-    fileInput.addEventListener("change", () => {
-      if (fileInput.files.length > 0) {
-        fileLabel.textContent = fileInput.files[0].name;
-        message.textContent = "";
-      }
-    });
+    <div class="actions">
+      <button id="convert-btn">Convert to PDFs</button>
+      <button id="merge-btn">Merge to Single PDF</button>
+    </div>
 
-    form.addEventListener("submit", (e) => {
-      if (fileInput.files.length === 0) {
-        e.preventDefault();
-        message.textContent = "❗ Please select a file.";
-        return;
-      }
-      loading.style.display = "block";
-      fileLabel.textContent = "Uploading...";
-    });
-  </script>
+    <div id="loading">⏳ Processing...</div>
+    <div id="result"></div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 PDF Magic</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

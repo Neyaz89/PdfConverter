@@ -13,7 +13,6 @@ packaging==25.0
 pikepdf==9.7.0
 pillow==11.2.1
 python-docx==1.1.2
-pywin32==310
 tqdm==4.67.1
 typing_extensions==4.13.2
 Werkzeug==3.1.3

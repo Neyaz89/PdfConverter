@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PDF Converter</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+
+</head>
+<body>
+  <div class="container">
+    <h1>PDF Converter</h1>
+    <div class="upload-area" id="upload-area">
+      <p>Drag & drop a file or click to upload</p>
+      <input type="file" id="file-input" accept=".pdf,.doc,.docx,.jpg,.png" />
+    </div>
+    <button id="upload-btn">Convert to PDF</button>
+    <div id="result"></div>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

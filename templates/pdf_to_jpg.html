@@ -1,10 +1,22 @@
-{% extends "index.html" %}
-{% block body %}
-<div class="tool-page">
-  <h2>PDF to JPG</h2>
-  <form id="uploadForm" method="post" enctype="multipart/form-data" action="/convert/pdf-to-jpg">
-    <input type="file" name="file" accept="application/pdf" required />
-    <button type="submit">Convert</button>
-  </form>
-</div>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PDF to JPG - Neyaz's World</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div id="background"></div>
+  <div class="container">
+    <h1>📄 PDF to JPG</h1>
+    <form action="/convert/pdf-to-jpg" method="post" enctype="multipart/form-data">
+      <input type="file" name="file" accept="application/pdf" required>
+      <button type="submit">Convert to JPG</button>
+    </form>
+    <a href="/" class="back-button">← Back</a>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
+  <script src="{{ url_for('static', filename='background.js') }}"></script>
+</body>
+</html>

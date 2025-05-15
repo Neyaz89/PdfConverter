@@ -20,4 +20,5 @@ wrapt==1.17.2
 fpdf==1.7.2
 pdf2image==1.16.3
 pdf2docx==0.5.6
+PyPDF2==3.0.1
 

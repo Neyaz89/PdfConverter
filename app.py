@@ -14,36 +14,29 @@ app.config['OUTPUT_FOLDER'] = 'converted'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
 
-
 @app.route('/')
 def home():
     return render_template('index.html')
-
 
 @app.route('/jpg-to-pdf')
 def jpg_to_pdf_page():
     return render_template('jpg_to_pdf.html')
 
-
 @app.route('/pdf-to-jpg')
 def pdf_to_jpg_page():
     return render_template('pdf_to_jpg.html')
-
 
 @app.route('/docx-to-pdf')
 def docx_to_pdf_page():
     return render_template('docx_to_pdf.html')
 
-
 @app.route('/pdf-to-docx')
 def pdf_to_docx_page():
     return render_template('pdf_to_docx.html')
 
-
 @app.route('/compress-pdf')
 def compress_pdf_page():
     return render_template('compress_pdf.html')
-
 
 @app.route('/convert/jpg-to-pdf', methods=['POST'])
 def convert_jpg_to_pdf():
@@ -60,7 +53,6 @@ def convert_jpg_to_pdf():
         image_list[0].save(output_path, save_all=True, append_images=image_list[1:])
 
     return send_file(output_path, as_attachment=True)
-
 
 @app.route('/convert/pdf-to-jpg', methods=['POST'])
 def convert_pdf_to_jpg():
@@ -85,7 +77,6 @@ def convert_pdf_to_jpg():
 
     return send_file(zip_path, as_attachment=True)
 
-
 @app.route('/convert/docx-to-pdf', methods=['POST'])
 def convert_docx_to_pdf():
     docx_file = request.files['file']
@@ -101,7 +92,6 @@ def convert_docx_to_pdf():
 
     return send_file(output_path, as_attachment=True)
 
-
 @app.route('/convert/pdf-to-docx', methods=['POST'])
 def convert_pdf_to_docx():
     from pdf2docx import Converter
@@ -115,7 +105,6 @@ def convert_pdf_to_docx():
     cv.close()
 
     return send_file(output_path, as_attachment=True)
-
 
 @app.route('/convert/compress-pdf', methods=['POST'])
 def compress_pdf():
@@ -135,7 +124,6 @@ def compress_pdf():
 
     return send_file(output_path, as_attachment=True)
 
-  if __name__ == '__main__':
+if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
-

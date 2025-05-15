@@ -1,1 +1,10 @@
-{% include 'upload_page.html' with context %}
+{% extends "index.html" %}
+{% block body %}
+<div class="tool-page">
+  <h2>JPG to PDF</h2>
+  <form id="uploadForm" method="post" enctype="multipart/form-data" action="/convert/jpg-to-pdf">
+    <input type="file" name="files" accept="image/jpeg, image/png" multiple required />
+    <button type="submit">Convert</button>
+  </form>
+</div>
+{% endblock %}

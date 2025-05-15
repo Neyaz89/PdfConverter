@@ -1,55 +1,90 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #121212;
-  color: #fff;
+body, html {
   margin: 0;
   padding: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #111;
+  color: white;
+  overflow-x: hidden;
 }
+
+#background {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+}
+
 .container {
-  max-width: 800px;
-  margin: auto;
-  padding: 40px;
   text-align: center;
+  padding-top: 60px;
 }
+
 h1 {
+  font-size: 3em;
   margin-bottom: 40px;
+  color: #f0db4f;
+  text-shadow: 2px 2px 4px #000;
 }
-.tool-buttons {
+
+.tools {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
   justify-content: center;
+  gap: 20px;
 }
+
 .tool-btn {
-  padding: 15px 25px;
-  background: #00c2ff;
+  padding: 15px 30px;
+  background-color: #282c34;
+  color: #f0f0f0;
   border: none;
-  border-radius: 8px;
-  color: #fff;
-  font-size: 16px;
-  text-decoration: none;
-  transition: transform 0.2s, background 0.3s;
-}
-.tool-btn:hover {
-  background: #008bb5;
-  transform: scale(1.05);
-}
-#drop-area {
-  border: 2px dashed #00c2ff;
-  padding: 40px;
   border-radius: 10px;
-  margin-bottom: 20px;
+  font-size: 1.1em;
   cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
 }
-.btn {
-  background: #00c2ff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
+
+.tool-btn:hover {
+  background-color: #f0db4f;
+  color: #000;
+  transform: scale(1.05);
+  box-shadow: 0 0 10px #f0db4f;
+}
+
+.tool-page {
+  max-width: 600px;
+  margin: 60px auto;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(240, 219, 79, 0.2);
+}
+
+input[type="file"] {
+  margin: 20px 0;
+  padding: 10px;
+  background: #1a1a1a;
   color: #fff;
-  font-size: 16px;
-  transition: background 0.3s;
+  border: 1px solid #555;
+  border-radius: 6px;
 }
-.btn:hover {
-  background: #008bb5;
+
+button {
+  background-color: #f0db4f;
+  color: #000;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #000;
+  color: #f0db4f;
+  box-shadow: 0 0 12px #f0db4f;
 }

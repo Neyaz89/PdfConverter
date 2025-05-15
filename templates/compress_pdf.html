@@ -1,1 +1,10 @@
-{% include 'upload_page.html' with context %}
+{% extends "index.html" %}
+{% block body %}
+<div class="tool-page">
+  <h2>Compress PDF</h2>
+  <form id="uploadForm" method="post" enctype="multipart/form-data" action="/convert/compress-pdf">
+    <input type="file" name="file" accept="application/pdf" required />
+    <button type="submit">Compress</button>
+  </form>
+</div>
+{% endblock %}

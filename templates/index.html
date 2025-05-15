@@ -2,22 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Neyaz's World</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Neyaz's World - File Converter</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
 </head>
-<body id="background">
+<body>
+  <div id="background"></div>
+
   <div class="container">
     <h1>Neyaz's World</h1>
-    <div class="tool-buttons">
-      <a href="/jpg-to-pdf" class="tool-btn">JPG to PDF</a>
-      <a href="/pdf-to-jpg" class="tool-btn">PDF to JPG</a>
-      <a href="/docx-to-pdf" class="tool-btn">DOCX to PDF</a>
-      <a href="/pdf-to-docx" class="tool-btn">PDF to DOCX</a>
-      <a href="/compress-pdf" class="tool-btn">Compress PDF</a>
+    <div class="tools">
+      <a href="{{ url_for('tool_page', tool_name='jpg_to_pdf') }}" class="tool-btn">JPG to PDF</a>
+      <a href="{{ url_for('tool_page', tool_name='pdf_to_jpg') }}" class="tool-btn">PDF to JPG</a>
+      <a href="{{ url_for('tool_page', tool_name='docx_to_pdf') }}" class="tool-btn">DOCX to PDF</a>
+      <a href="{{ url_for('tool_page', tool_name='pdf_to_docx') }}" class="tool-btn">PDF to DOCX</a>
+      <a href="{{ url_for('tool_page', tool_name='compress_pdf') }}" class="tool-btn">Compress PDF</a>
     </div>
   </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
   <script src="{{ url_for('static', filename='background.js') }}"></script>
 </body>
 </html>

@@ -1,105 +1,136 @@
 import os
 import tempfile
-from flask import Flask, render_template, request, send_file, redirect, url_for
+from flask import Flask, request, render_template, send_file, redirect, url_for
 from werkzeug.utils import secure_filename
 from PIL import Image
-from docx import Document
-from fpdf import FPDF
 import fitz  # PyMuPDF
+from fpdf import FPDF
+from docx import Document
+from PyPDF2 import PdfReader, PdfWriter
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = tempfile.mkdtemp()
-ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png'}
-ALLOWED_DOC_EXTENSIONS = {'docx'}
+UPLOAD_FOLDER = tempfile.mkdtemp()
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-def allowed_file(filename, allowed_extensions):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png'}
+ALLOWED_DOCX_EXTENSIONS = {'docx'}
+ALLOWED_PDF_EXTENSIONS = {'pdf'}
+
+
+def allowed_file(filename, allowed_set):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_set
+
 
 @app.route('/')
-def index():
+def home():
     return render_template('index.html')
 
-@app.route('/jpg-to-pdf')
-def jpg_to_pdf():
-    return render_template('jpg_to_pdf.html')
 
-@app.route('/pdf-to-jpg')
-def pdf_to_jpg():
-    return render_template('pdf_to_jpg.html')
+@app.route('/tool/<tool_name>')
+def tool_page(tool_name):
+    try:
+        return render_template(f'{tool_name}.html')
+    except:
+        return "Tool page not found", 404
 
-@app.route('/docx-to-pdf')
-def docx_to_pdf():
-    return render_template('docx_to_pdf.html')
-
-@app.route('/pdf-to-docx')
-def pdf_to_docx():
-    return render_template('pdf_to_docx.html')
-
-@app.route('/compress-pdf')
-def compress_pdf():
-    return render_template('compress_pdf.html')
 
 @app.route('/convert/jpg-to-pdf', methods=['POST'])
-def convert_jpg_to_pdf():
+def jpg_to_pdf():
     files = request.files.getlist('files')
     images = []
 
     for file in files:
-        if file and allowed_file(file.filename, ALLOWED_IMAGE_EXTENSIONS):
-            img = Image.open(file).convert('RGB')
+        if allowed_file(file.filename, ALLOWED_IMAGE_EXTENSIONS):
+            img = Image.open(file.stream).convert('RGB')
             images.append(img)
 
     if not images:
-        return "No valid images uploaded", 400
+        return "No valid image files provided", 400
 
-    output_path = os.path.join(app.config['UPLOAD_FOLDER'], 'output.pdf')
+    output_path = os.path.join(UPLOAD_FOLDER, 'output.pdf')
     images[0].save(output_path, save_all=True, append_images=images[1:])
-    return send_file(output_path, as_attachment=True)
+    return send_file(output_path, as_attachment=True, download_name='converted.pdf')
+
 
 @app.route('/convert/pdf-to-jpg', methods=['POST'])
-def convert_pdf_to_jpg():
-    file = request.files['file']
-    if file.filename.endswith('.pdf'):
-        doc = fitz.open(stream=file.read(), filetype='pdf')
-        image_paths = []
-        for i, page in enumerate(doc):
-            pix = page.get_pixmap()
-            img_path = os.path.join(app.config['UPLOAD_FOLDER'], f'page_{i + 1}.jpg')
-            pix.save(img_path)
-            image_paths.append(img_path)
-        if image_paths:
-            return send_file(image_paths[0], as_attachment=True)
-    return "Invalid PDF file", 400
+def pdf_to_jpg():
+    file = request.files.get('file')
+    if not file or not allowed_file(file.filename, ALLOWED_PDF_EXTENSIONS):
+        return "Invalid PDF file", 400
+
+    doc = fitz.open(stream=file.stream.read(), filetype='pdf')
+    images = []
+
+    for i in range(len(doc)):
+        pix = doc[i].get_pixmap()
+        output_path = os.path.join(UPLOAD_FOLDER, f'page_{i + 1}.jpg')
+        pix.save(output_path)
+        images.append(output_path)
+
+    if not images:
+        return "Conversion failed", 500
+
+    # Return only first image as preview
+    return send_file(images[0], as_attachment=True, download_name='page_1.jpg')
+
 
 @app.route('/convert/docx-to-pdf', methods=['POST'])
-def convert_docx_to_pdf():
-    file = request.files['file']
-    if file and allowed_file(file.filename, ALLOWED_DOC_EXTENSIONS):
-        doc = Document(file)
-        pdf = FPDF()
+def docx_to_pdf():
+    file = request.files.get('file')
+    if not file or not allowed_file(file.filename, ALLOWED_DOCX_EXTENSIONS):
+        return "Invalid DOCX file", 400
+
+    doc = Document(file)
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+
+    for para in doc.paragraphs:
         pdf.add_page()
         pdf.set_font("Arial", size=12)
-        for para in doc.paragraphs:
-            pdf.multi_cell(0, 10, para.text)
-        output_path = os.path.join(app.config['UPLOAD_FOLDER'], 'doc_output.pdf')
-        pdf.output(output_path)
-        return send_file(output_path, as_attachment=True)
-    return "Invalid DOCX file", 400
+        pdf.multi_cell(0, 10, para.text)
+
+    output_path = os.path.join(UPLOAD_FOLDER, 'docx_output.pdf')
+    pdf.output(output_path)
+    return send_file(output_path, as_attachment=True, download_name='converted.pdf')
+
 
 @app.route('/convert/pdf-to-docx', methods=['POST'])
-def convert_pdf_to_docx():
-    file = request.files['file']
-    if file and file.filename.endswith('.pdf'):
-        doc = fitz.open(stream=file.read(), filetype='pdf')
-        output_doc = Document()
-        for page in doc:
-            text = page.get_text()
-            output_doc.add_paragraph(text)
-        output_path = os.path.join(app.config['UPLOAD_FOLDER'], 'output.docx')
-        output_doc.save(output_path)
-        return send_file(output_path, as_attachment=True)
-    return "Invalid PDF file", 400
+def pdf_to_docx():
+    file = request.files.get('file')
+    if not file or not allowed_file(file.filename, ALLOWED_PDF_EXTENSIONS):
+        return "Invalid PDF file", 400
+
+    pdf = PdfReader(file.stream)
+    doc = Document()
+
+    for page in pdf.pages:
+        text = page.extract_text()
+        doc.add_paragraph(text if text else "[Blank Page]")
+
+    output_path = os.path.join(UPLOAD_FOLDER, 'converted.docx')
+    doc.save(output_path)
+    return send_file(output_path, as_attachment=True, download_name='converted.docx')
+
+
+@app.route('/convert/compress-pdf', methods=['POST'])
+def compress_pdf():
+    file = request.files.get('file')
+    if not file or not allowed_file(file.filename, ALLOWED_PDF_EXTENSIONS):
+        return "Invalid PDF file", 400
+
+    reader = PdfReader(file.stream)
+    writer = PdfWriter()
+
+    for page in reader.pages:
+        writer.add_page(page)
+
+    output_path = os.path.join(UPLOAD_FOLDER, 'compressed.pdf')
+    with open(output_path, 'wb') as f:
+        writer.write(f)
+
+    return send_file(output_path, as_attachment=True, download_name='compressed.pdf')
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))
-    app.run(debug=False, host='0.0.0.0', port=port)
+    app.run(debug=True, host='0.0.0.0', port=port)

@@ -1,21 +1,41 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const dropArea = document.getElementById("drop-area");
-  const fileElem = document.getElementById("fileElem");
+  const uploadForm = document.getElementById("uploadForm");
 
-  dropArea.addEventListener("click", () => fileElem.click());
+  if (uploadForm) {
+    uploadForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-  dropArea.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    dropArea.classList.add("highlight");
-  });
+      const formData = new FormData(uploadForm);
+      const action = uploadForm.getAttribute("action");
 
-  dropArea.addEventListener("dragleave", () => {
-    dropArea.classList.remove("highlight");
-  });
+      try {
+        const response = await fetch(action, {
+          method: "POST",
+          body: formData,
+        });
 
-  dropArea.addEventListener("drop", (e) => {
-    e.preventDefault();
-    fileElem.files = e.dataTransfer.files;
-    dropArea.classList.remove("highlight");
-  });
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "converted_file." + getFileExtension(action);
+          link.click();
+        } else {
+          alert("Conversion failed.");
+        }
+      } catch (err) {
+        alert("An error occurred. Please try again.");
+        console.error(err);
+      }
+    });
+  }
 });
+
+function getFileExtension(actionUrl) {
+  if (actionUrl.includes("jpg-to-pdf") || actionUrl.includes("docx-to-pdf")) return "pdf";
+  if (actionUrl.includes("pdf-to-jpg")) return "zip";
+  if (actionUrl.includes("pdf-to-docx")) return "docx";
+  if (actionUrl.includes("compress-pdf")) return "pdf";
+  return "file";
+}

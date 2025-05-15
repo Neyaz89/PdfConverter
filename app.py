@@ -14,7 +14,7 @@ def allowed_file(filename):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', title="Neyaz's World")
 
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -42,21 +42,13 @@ def upload():
     if not images:
         return jsonify({'error': 'No valid images found'}), 400
 
-    # Define size and margin
     page_dims = {
-        'A4': (595, 842),         # A4 size in points
-        'letter': (612, 792),     # Letter size
+        'A4': (595, 842),
+        'letter': (612, 792),
     }
 
     def add_margin(img, margin_type):
-        if margin_type == 'none':
-            return img
-        elif margin_type == 'small':
-            border = 20
-        elif margin_type == 'big':
-            border = 60
-        else:
-            border = 0
+        border = {'none': 0, 'small': 20, 'big': 60}.get(margin_type, 0)
         new_img = Image.new("RGB", (img.width + 2 * border, img.height + 2 * border), "white")
         new_img.paste(img, (border, border))
         return new_img
@@ -64,34 +56,23 @@ def upload():
     processed_images = []
     for img in images:
         img = add_margin(img, margin)
-
-        # Resize to fit page if needed
         if page_size in page_dims:
             width, height = page_dims[page_size]
             if orientation == 'landscape':
                 width, height = height, width
             img.thumbnail((width, height))
-
-            # Create white background page and center image
             page = Image.new("RGB", (width, height), "white")
             x = (width - img.width) // 2
             y = (height - img.height) // 2
             page.paste(img, (x, y))
             processed_images.append(page)
         else:
-            # Use "fit" option: just add margin and use original image
             processed_images.append(img)
 
     output_pdf = os.path.join(app.config['UPLOAD_FOLDER'], 'output.pdf')
-
-    if merge:
-        processed_images[0].save(output_pdf, save_all=True, append_images=processed_images[1:])
-    else:
-        processed_images[0].save(output_pdf, save_all=True, append_images=processed_images[1:])
-
+    processed_images[0].save(output_pdf, save_all=True, append_images=processed_images[1:])
     return send_file(output_pdf, as_attachment=True, download_name="converted.pdf")
 
-# ✅ FIX: This should NOT be indented
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))
     app.run(debug=False, host='0.0.0.0', port=port)

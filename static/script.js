@@ -1,116 +1,75 @@
-// Initialize Lottie animations
-const uploadAnimation = lottie.loadAnimation({
-  container: document.getElementById('upload-animation'),
-  renderer: 'svg',
-  loop: true,
-  autoplay: true,
-  path: 'https://assets1.lottiefiles.com/packages/lf20_Cc8Bpg.json' // Upload animation
-});
+document.addEventListener("DOMContentLoaded", function () {
+  const dropArea = document.getElementById("drop-area");
+  const fileInput = document.getElementById("fileElem");
+  const convertButton = document.getElementById("convert-button");
+  const loading = document.getElementById("loading-animation");
 
-const loadingAnimation = lottie.loadAnimation({
-  container: document.getElementById('loading-animation'),
-  renderer: 'svg',
-  loop: true,
-  autoplay: false,
-  path: 'https://assets3.lottiefiles.com/packages/lf20_j1adxtyb.json' // Loading animation
-});
+  let files = [];
 
-const dropArea = document.getElementById('drop-area');
-const fileInput = document.getElementById('fileElem');
-let files = [];
-
-// Prevent default behaviors
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-  dropArea.addEventListener(eventName, preventDefaults, false);
-});
-
-function preventDefaults(e) {
-  e.preventDefault();
-  e.stopPropagation();
-}
-
-// Highlight drop area when item is dragged over it
-['dragenter', 'dragover'].forEach(eventName => {
-  dropArea.addEventListener(eventName, () => dropArea.classList.add('hover'), false);
-});
-
-['dragleave', 'drop'].forEach(eventName => {
-  dropArea.addEventListener(eventName, () => dropArea.classList.remove('hover'), false);
-});
-
-// Handle dropped files
-dropArea.addEventListener('drop', handleDrop, false);
-
-function handleDrop(e) {
-  const dt = e.dataTransfer;
-  const droppedFiles = dt.files;
-  handleFiles(droppedFiles);
-}
-
-fileInput.addEventListener('change', () => {
-  handleFiles(fileInput.files);
-});
-
-function handleFiles(selectedFiles) {
-  for (let i = 0; i < selectedFiles.length; i++) {
-    if (selectedFiles[i].type.startsWith('image/')) {
-      files.push(selectedFiles[i]);
-    }
-  }
-  alert(`${files.length} image(s) selected.`);
-}
-
-// Handle form submission
-document.getElementById('convert-button')?.addEventListener('click', () => {
-  if (files.length === 0) {
-    alert('Please select at least one image file.');
-    return;
-  }
-
-  const formData = new FormData();
-  files.forEach(file => {
-    formData.append('files', file);
+  ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+    dropArea.addEventListener(eventName, preventDefaults, false);
   });
 
-  const orientation = document.getElementById('orientation')?.value || 'portrait';
-  const pageSize = document.getElementById('page-size')?.value || 'fit';
-  const margin = document.getElementById('margin')?.value || 'none';
-  const merge = document.getElementById('merge')?.checked || true;
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
 
-  formData.append('orientation', orientation);
-  formData.append('page_size', pageSize);
-  formData.append('margin', margin);
-  formData.append('merge', merge);
+  dropArea.addEventListener("dragover", () => dropArea.classList.add("hover"));
+  dropArea.addEventListener("dragleave", () => dropArea.classList.remove("hover"));
+  dropArea.addEventListener("drop", handleDrop);
+  fileInput.addEventListener("change", handleFiles);
 
-  // Show loading animation
-  document.getElementById('loading-animation').classList.remove('hidden');
-  loadingAnimation.play();
+  function handleDrop(e) {
+    let dt = e.dataTransfer;
+    let droppedFiles = dt.files;
+    handleFiles({ target: { files: droppedFiles } });
+  }
 
-  fetch('/upload', {
-    method: 'POST',
-    body: formData
-  })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Conversion failed.');
-      }
-      return response.blob();
+  function handleFiles(e) {
+    files = [...e.target.files];
+    const dropText = dropArea.querySelector("p");
+    dropText.innerText = files.length + " file(s) selected";
+  }
+
+  convertButton.addEventListener("click", () => {
+    if (!files.length) {
+      alert("Please upload some image files first.");
+      return;
+    }
+
+    const formData = new FormData();
+    files.forEach(file => formData.append("files", file));
+    formData.append("orientation", document.getElementById("orientation").value);
+    formData.append("page_size", document.getElementById("page-size").value);
+    formData.append("margin", document.getElementById("margin").value);
+    formData.append("merge", document.getElementById("merge").checked);
+
+    convertButton.disabled = true;
+    loading.classList.remove("hidden");
+
+    fetch("/upload", {
+      method: "POST",
+      body: formData
     })
-    .then(blob => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'converted.pdf';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    })
-    .catch(error => {
-      alert(error.message);
-    })
-    .finally(() => {
-      // Hide loading animation
-      loadingAnimation.stop();
-      document.getElementById('loading-animation').classList.add('hidden');
-    });
+      .then(response => {
+        if (!response.ok) throw new Error("Conversion failed");
+        return response.blob();
+      })
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "converted.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(err => alert(err.message))
+      .finally(() => {
+        convertButton.disabled = false;
+        loading.classList.add("hidden");
+      });
+  });
 });

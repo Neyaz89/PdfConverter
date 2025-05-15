@@ -2,60 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>{{ title }}</title>
-  <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
-  <link rel="stylesheet" href="/static/style.css">
+  <title>Neyaz's World</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
 </head>
-<body>
+<body id="background">
   <div class="container">
-    <header>
-      <h1>Neyaz's World</h1>
-      <p>The Ultimate Document Converter</p>
-    </header>
-
-    <div class="upload-section">
-      <div id="drop-area">
-        <p>Drag & drop files here or <label for="fileElem" class="button">Browse</label></p>
-        <input type="file" id="fileElem" multiple accept="image/*">
-      </div>
+    <h1>Neyaz's World</h1>
+    <div class="tool-buttons">
+      <a href="/jpg-to-pdf" class="tool-btn">JPG to PDF</a>
+      <a href="/pdf-to-jpg" class="tool-btn">PDF to JPG</a>
+      <a href="/docx-to-pdf" class="tool-btn">DOCX to PDF</a>
+      <a href="/pdf-to-docx" class="tool-btn">PDF to DOCX</a>
+      <a href="/compress-pdf" class="tool-btn">Compress PDF</a>
     </div>
-
-    <div class="options-section">
-      <label for="orientation">Orientation:</label>
-      <select id="orientation">
-        <option value="portrait">Portrait</option>
-        <option value="landscape">Landscape</option>
-      </select>
-
-      <label for="page-size">Page Size:</label>
-      <select id="page-size">
-        <option value="fit">Fit Image</option>
-        <option value="A4">A4</option>
-        <option value="letter">Letter</option>
-      </select>
-
-      <label for="margin">Margin:</label>
-      <select id="margin">
-        <option value="none">None</option>
-        <option value="small">Small</option>
-        <option value="big">Big</option>
-      </select>
-
-      <label><input type="checkbox" id="merge" checked> Merge Images into One PDF</label>
-    </div>
-
-    <div class="convert-section">
-      <button class="button" id="convert-button">Convert to PDF</button>
-      <div id="loading-animation" class="animation-container hidden"></div>
-    </div>
-
-    <footer>
-      <p>&copy; 2025 Neyaz's World. All rights reserved.</p>
-    </footer>
   </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.9.6/lottie.min.js"></script>
-  <script src="/static/script.js"></script>
+  <script src="{{ url_for('static', filename='background.js') }}"></script>
 </body>
 </html>

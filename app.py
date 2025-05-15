@@ -1,77 +1,104 @@
 import os
 import tempfile
-from flask import Flask, request, send_file, jsonify, render_template
+from flask import Flask, render_template, request, send_file, redirect, url_for
 from werkzeug.utils import secure_filename
 from PIL import Image
+from docx import Document
+from fpdf import FPDF
+import fitz  # PyMuPDF
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = tempfile.mkdtemp()
+ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png'}
+ALLOWED_DOC_EXTENSIONS = {'docx'}
 
-ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+def allowed_file(filename, allowed_extensions):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 @app.route('/')
 def index():
-    return render_template('index.html', title="Neyaz's World")
+    return render_template('index.html')
 
-@app.route('/upload', methods=['POST'])
-def upload():
-    if 'files' not in request.files:
-        return jsonify({'error': 'No files part in request'}), 400
+@app.route('/jpg-to-pdf')
+def jpg_to_pdf():
+    return render_template('jpg_to_pdf.html')
 
+@app.route('/pdf-to-jpg')
+def pdf_to_jpg():
+    return render_template('pdf_to_jpg.html')
+
+@app.route('/docx-to-pdf')
+def docx_to_pdf():
+    return render_template('docx_to_pdf.html')
+
+@app.route('/pdf-to-docx')
+def pdf_to_docx():
+    return render_template('pdf_to_docx.html')
+
+@app.route('/compress-pdf')
+def compress_pdf():
+    return render_template('compress_pdf.html')
+
+@app.route('/convert/jpg-to-pdf', methods=['POST'])
+def convert_jpg_to_pdf():
     files = request.files.getlist('files')
-    orientation = request.form.get('orientation', 'portrait')
-    page_size = request.form.get('page_size', 'fit')
-    margin = request.form.get('margin', 'none')
-    merge = request.form.get('merge', 'true').lower() == 'true'
-
     images = []
 
     for file in files:
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-            img = Image.open(filepath).convert('RGB')
+        if file and allowed_file(file.filename, ALLOWED_IMAGE_EXTENSIONS):
+            img = Image.open(file).convert('RGB')
             images.append(img)
-        else:
-            return jsonify({'error': 'Invalid file type'}), 400
 
     if not images:
-        return jsonify({'error': 'No valid images found'}), 400
+        return "No valid images uploaded", 400
 
-    page_dims = {
-        'A4': (595, 842),
-        'letter': (612, 792),
-    }
+    output_path = os.path.join(app.config['UPLOAD_FOLDER'], 'output.pdf')
+    images[0].save(output_path, save_all=True, append_images=images[1:])
+    return send_file(output_path, as_attachment=True)
 
-    def add_margin(img, margin_type):
-        border = {'none': 0, 'small': 20, 'big': 60}.get(margin_type, 0)
-        new_img = Image.new("RGB", (img.width + 2 * border, img.height + 2 * border), "white")
-        new_img.paste(img, (border, border))
-        return new_img
+@app.route('/convert/pdf-to-jpg', methods=['POST'])
+def convert_pdf_to_jpg():
+    file = request.files['file']
+    if file.filename.endswith('.pdf'):
+        doc = fitz.open(stream=file.read(), filetype='pdf')
+        image_paths = []
+        for i, page in enumerate(doc):
+            pix = page.get_pixmap()
+            img_path = os.path.join(app.config['UPLOAD_FOLDER'], f'page_{i + 1}.jpg')
+            pix.save(img_path)
+            image_paths.append(img_path)
+        if image_paths:
+            return send_file(image_paths[0], as_attachment=True)
+    return "Invalid PDF file", 400
 
-    processed_images = []
-    for img in images:
-        img = add_margin(img, margin)
-        if page_size in page_dims:
-            width, height = page_dims[page_size]
-            if orientation == 'landscape':
-                width, height = height, width
-            img.thumbnail((width, height))
-            page = Image.new("RGB", (width, height), "white")
-            x = (width - img.width) // 2
-            y = (height - img.height) // 2
-            page.paste(img, (x, y))
-            processed_images.append(page)
-        else:
-            processed_images.append(img)
+@app.route('/convert/docx-to-pdf', methods=['POST'])
+def convert_docx_to_pdf():
+    file = request.files['file']
+    if file and allowed_file(file.filename, ALLOWED_DOC_EXTENSIONS):
+        doc = Document(file)
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        for para in doc.paragraphs:
+            pdf.multi_cell(0, 10, para.text)
+        output_path = os.path.join(app.config['UPLOAD_FOLDER'], 'doc_output.pdf')
+        pdf.output(output_path)
+        return send_file(output_path, as_attachment=True)
+    return "Invalid DOCX file", 400
 
-    output_pdf = os.path.join(app.config['UPLOAD_FOLDER'], 'output.pdf')
-    processed_images[0].save(output_pdf, save_all=True, append_images=processed_images[1:])
-    return send_file(output_pdf, as_attachment=True, download_name="converted.pdf")
+@app.route('/convert/pdf-to-docx', methods=['POST'])
+def convert_pdf_to_docx():
+    file = request.files['file']
+    if file and file.filename.endswith('.pdf'):
+        doc = fitz.open(stream=file.read(), filetype='pdf')
+        output_doc = Document()
+        for page in doc:
+            text = page.get_text()
+            output_doc.add_paragraph(text)
+        output_path = os.path.join(app.config['UPLOAD_FOLDER'], 'output.docx')
+        output_doc.save(output_path)
+        return send_file(output_path, as_attachment=True)
+    return "Invalid PDF file", 400
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))

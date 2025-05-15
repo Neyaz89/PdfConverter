@@ -4,8 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>File Converter</title>
+
   <!-- Include dotLottie Player -->
   <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+
+  <!-- Include Lottie Web for JS-controlled animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.10.2/lottie.min.js"></script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -45,11 +50,24 @@
       margin: 0;
       font-size: 1.1rem;
     }
+    .animation-container {
+      width: 100px;
+      height: 100px;
+      margin: 30px auto;
+    }
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>File Converter Tools</h1>
+
+    <!-- Upload Animation -->
+    <div id="upload-animation" class="animation-container"></div>
+
+    <!-- Tool Cards -->
     <div class="tool-grid">
       <!-- JPG to PDF -->
       <div class="tool-card">
@@ -103,6 +121,11 @@
         <h3>Upload Files</h3>
       </div>
     </div>
+
+    <!-- Loading Animation -->
+    <div id="loading-animation" class="animation-container hidden"></div>
   </div>
+
+  <script src="script.js"></script>
 </body>
 </html>

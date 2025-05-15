@@ -4,7 +4,7 @@ const uploadAnimation = lottie.loadAnimation({
   renderer: 'svg',
   loop: true,
   autoplay: true,
-  path: 'https://assets10.lottiefiles.com/packages/lf20_j1adxtyb.json' // Replace with your desired animation
+  path: 'https://assets1.lottiefiles.com/packages/lf20_Cc8Bpg.json' // Upload animation
 });
 
 const loadingAnimation = lottie.loadAnimation({
@@ -12,7 +12,7 @@ const loadingAnimation = lottie.loadAnimation({
   renderer: 'svg',
   loop: true,
   autoplay: false,
-  path: 'https://assets10.lottiefiles.com/packages/lf20_j1adxtyb.json' // Replace with your desired animation
+  path: 'https://assets3.lottiefiles.com/packages/lf20_j1adxtyb.json' // Loading animation
 });
 
 const dropArea = document.getElementById('drop-area');
@@ -61,7 +61,7 @@ function handleFiles(selectedFiles) {
 }
 
 // Handle form submission
-document.getElementById('convert-button').addEventListener('click', () => {
+document.getElementById('convert-button')?.addEventListener('click', () => {
   if (files.length === 0) {
     alert('Please select at least one image file.');
     return;
@@ -72,10 +72,10 @@ document.getElementById('convert-button').addEventListener('click', () => {
     formData.append('files', file);
   });
 
-  const orientation = document.getElementById('orientation').value;
-  const pageSize = document.getElementById('page-size').value;
-  const margin = document.getElementById('margin').value;
-  const merge = document.getElementById('merge').checked;
+  const orientation = document.getElementById('orientation')?.value || 'portrait';
+  const pageSize = document.getElementById('page-size')?.value || 'fit';
+  const margin = document.getElementById('margin')?.value || 'none';
+  const merge = document.getElementById('merge')?.checked || true;
 
   formData.append('orientation', orientation);
   formData.append('page_size', pageSize);

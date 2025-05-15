@@ -87,13 +87,11 @@ def upload():
     if merge:
         processed_images[0].save(output_pdf, save_all=True, append_images=processed_images[1:])
     else:
-        # For now, even without merge we return one file
         processed_images[0].save(output_pdf, save_all=True, append_images=processed_images[1:])
 
     return send_file(output_pdf, as_attachment=True, download_name="converted.pdf")
 
-
-    if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 10000))  # Default fallback if PORT is not set
+# ✅ FIX: This should NOT be indented
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 10000))
     app.run(debug=False, host='0.0.0.0', port=port)
-

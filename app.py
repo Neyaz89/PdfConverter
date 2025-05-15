@@ -1,141 +1,96 @@
-from flask import Flask, render_template, request, send_file, jsonify
-from werkzeug.utils import secure_filename
 import os
-import uuid
-import subprocess
+import tempfile
+from flask import Flask, request, send_file, jsonify, render_template
+from werkzeug.utils import secure_filename
 from PIL import Image
-import img2pdf
-from pdf2image import convert_from_path
-from pdf2docx import Converter
-from fpdf import FPDF
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'
+app.config['UPLOAD_FOLDER'] = tempfile.mkdtemp()
 
-UPLOAD_FOLDER = 'uploads'
-CONVERTED_FOLDER = 'converted'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(CONVERTED_FOLDER, exist_ok=True)
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-def convert_with_libreoffice(input_path, output_dir):
-    try:
-        subprocess.run([
-            'soffice', '--headless', '--convert-to', 'pdf', '--outdir', output_dir, input_path
-        ], check=True)
-        base = os.path.splitext(os.path.basename(input_path))[0]
-        return os.path.join(output_dir, f"{base}.pdf")
-    except subprocess.CalledProcessError:
-        raise Exception("LibreOffice conversion failed")
-
-def text_to_pdf(text_file_path, output_pdf_path):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
-
-    with open(text_file_path, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
-        for line in lines:
-            pdf.cell(200, 10, txt=line.strip(), ln=True)
-
-    pdf.output(output_pdf_path)
-
 @app.route('/upload', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file uploaded'}), 400
+def upload():
+    if 'files' not in request.files:
+        return jsonify({'error': 'No files part in request'}), 400
 
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'No file selected'}), 400
+    files = request.files.getlist('files')
+    orientation = request.form.get('orientation', 'portrait')
+    page_size = request.form.get('page_size', 'fit')
+    margin = request.form.get('margin', 'none')
+    merge = request.form.get('merge', 'true').lower() == 'true'
 
-    filename = secure_filename(file.filename)
-    file_ext = filename.rsplit('.', 1)[-1].lower()
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
-    file.save(file_path)
+    images = []
 
-    try:
-        if file_ext in ['jpg', 'jpeg', 'png']:
-            output_filename = f"{uuid.uuid4()}.pdf"
-            output_path = os.path.join(CONVERTED_FOLDER, output_filename)
-            with open(output_path, "wb") as f:
-                f.write(img2pdf.convert(file_path))
-        elif file_ext in ['docx', 'pptx', 'xlsx']:
-            output_path = convert_with_libreoffice(file_path, CONVERTED_FOLDER)
-        elif file_ext == 'txt':
-            output_filename = f"{uuid.uuid4()}.pdf"
-            output_path = os.path.join(CONVERTED_FOLDER, output_filename)
-            text_to_pdf(file_path, output_path)
-        elif file_ext == 'pdf':
-            return send_file(file_path, as_attachment=True, download_name="converted.pdf")
+    for file in files:
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            img = Image.open(filepath).convert('RGB')
+            images.append(img)
         else:
-            return jsonify({'error': 'Unsupported file type'}), 400
+            return jsonify({'error': 'Invalid file type'}), 400
 
-        return send_file(output_path, as_attachment=True, download_name="converted.pdf")
+    if not images:
+        return jsonify({'error': 'No valid images found'}), 400
 
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    finally:
-        try:
-            os.remove(file_path)
-        except:
-            pass
+    # Define size and margin
+    page_dims = {
+        'A4': (595, 842),         # A4 size in points
+        'letter': (612, 792),     # Letter size
+    }
 
-@app.route('/pdf-to-jpg', methods=['POST'])
-def pdf_to_jpg():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file uploaded'}), 400
+    def add_margin(img, margin_type):
+        if margin_type == 'none':
+            return img
+        elif margin_type == 'small':
+            border = 20
+        elif margin_type == 'big':
+            border = 60
+        else:
+            border = 0
+        new_img = Image.new("RGB", (img.width + 2 * border, img.height + 2 * border), "white")
+        new_img.paste(img, (border, border))
+        return new_img
 
-    file = request.files['file']
-    filename = secure_filename(file.filename)
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
-    file.save(file_path)
+    processed_images = []
+    for img in images:
+        img = add_margin(img, margin)
 
-    try:
-        images = convert_from_path(file_path)
-        output_images = []
-        for img in images:
-            output_path = os.path.join(CONVERTED_FOLDER, f"{uuid.uuid4()}.jpg")
-            img.save(output_path, 'JPEG')
-            output_images.append(output_path)
-        return send_file(output_images[0], as_attachment=True, download_name="converted.jpg")
-    except Exception as e:
-        return jsonify({'error': 'Failed to convert PDF to JPG'}), 500
-    finally:
-        try:
-            os.remove(file_path)
-        except:
-            pass
+        # Resize to fit page if needed
+        if page_size in page_dims:
+            width, height = page_dims[page_size]
+            if orientation == 'landscape':
+                width, height = height, width
+            img.thumbnail((width, height))
 
-@app.route('/pdf-to-docx', methods=['POST'])
-def pdf_to_docx():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file uploaded'}), 400
+            # Create white background page and center image
+            page = Image.new("RGB", (width, height), "white")
+            x = (width - img.width) // 2
+            y = (height - img.height) // 2
+            page.paste(img, (x, y))
+            processed_images.append(page)
+        else:
+            # Use "fit" option: just add margin and use original image
+            processed_images.append(img)
 
-    file = request.files['file']
-    filename = secure_filename(file.filename)
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
-    file.save(file_path)
+    output_pdf = os.path.join(app.config['UPLOAD_FOLDER'], 'output.pdf')
 
-    output_filename = f"{uuid.uuid4()}.docx"
-    output_path = os.path.join(CONVERTED_FOLDER, output_filename)
+    if merge:
+        processed_images[0].save(output_pdf, save_all=True, append_images=processed_images[1:])
+    else:
+        # For now, even without merge we return one file
+        processed_images[0].save(output_pdf, save_all=True, append_images=processed_images[1:])
 
-    try:
-        cv = Converter(file_path)
-        cv.convert(output_path, start=0, end=None)
-        cv.close()
-        return send_file(output_path, as_attachment=True, download_name="converted.docx")
-    except Exception as e:
-        return jsonify({'error': 'PDF to DOCX conversion failed'}), 500
-    finally:
-        try:
-            os.remove(file_path)
-        except:
-            pass
+    return send_file(output_pdf, as_attachment=True, download_name="converted.pdf")
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 10000))
-    app.run(debug=False, host='0.0.0.0', port=port)
+    app.run(debug=True)

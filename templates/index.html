@@ -3,35 +3,106 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Neyaz's File Converter</title>
-  <link rel="stylesheet" href="/static/style.css" />
+  <title>File Converter</title>
+  <!-- Include dotLottie Player -->
+  <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 960px;
+      margin: auto;
+      padding: 40px 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 30px;
+    }
+    .tool-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+    }
+    .tool-card:hover {
+      transform: translateY(-5px);
+    }
+    dotlottie-player {
+      margin-bottom: 15px;
+    }
+    h3 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Neyaz's File Converter</h1>
-  </header>
+  <div class="container">
+    <h1>File Converter Tools</h1>
+    <div class="tool-grid">
+      <!-- JPG to PDF -->
+      <div class="tool-card">
+        <dotlottie-player
+          src="https://lottie.host/9a9c693a-a681-4d0d-9539-fc5c5bd5f9ef/ZztpJ9iKaG.lottie"
+          background="transparent"
+          speed="1"
+          style="width: 150px; height: 150px"
+          loop
+          autoplay>
+        </dotlottie-player>
+        <h3>JPG to PDF</h3>
+      </div>
 
-  <section class="tools-container">
-    <button class="tool-btn" onclick="setConversionType('convert')">📄 Convert to PDF</button>
-    <button class="tool-btn" onclick="setConversionType('pdf-to-jpg')">🖼️ PDF to JPG</button>
-    <button class="tool-btn" onclick="setConversionType('pdf-to-docx')">📑 PDF to DOCX</button>
-  </section>
+      <!-- PDF to JPG -->
+      <div class="tool-card">
+        <dotlottie-player
+          src="https://lottie.host/741538e9-5067-4b2f-a31d-9b6057369a36/PBh83A2wdc.lottie"
+          background="transparent"
+          speed="1"
+          style="width: 150px; height: 150px"
+          loop
+          autoplay>
+        </dotlottie-player>
+        <h3>PDF to JPG</h3>
+      </div>
 
-  <section class="upload-area" id="drop-area">
-    <h2>Drag & Drop Your File Here</h2>
-    <p>Or click to upload</p>
-    <input type="file" id="fileElem" accept="*" onchange="handleFiles(this.files)" hidden />
-    <button onclick="document.getElementById('fileElem').click()">Browse</button>
-  </section>
+      <!-- PDF to DOCX -->
+      <div class="tool-card">
+        <dotlottie-player
+          src="https://lottie.host/741538e9-5067-4b2f-a31d-9b6057369a36/PBh83A2wdc.lottie"
+          background="transparent"
+          speed="1"
+          style="width: 150px; height: 150px"
+          loop
+          autoplay>
+        </dotlottie-player>
+        <h3>PDF to DOCX</h3>
+      </div>
 
-  <section id="preview" class="preview-area"></section>
-
-  <div class="progress-container">
-    <div class="progress-bar" id="progressBar"></div>
+      <!-- Upload Files -->
+      <div class="tool-card">
+        <dotlottie-player
+          src="https://lottie.host/4c63b8e6-49ab-4f6e-a1e8-021b1e206ad2/tf0EeMWmYg.lottie"
+          background="transparent"
+          speed="1"
+          style="width: 150px; height: 150px"
+          loop
+          autoplay>
+        </dotlottie-player>
+        <h3>Upload Files</h3>
+      </div>
+    </div>
   </div>
-
-  <button class="submit-btn" onclick="uploadFile()">Convert Now</button>
-
-  <script src="/static/script.js"></script>
 </body>
 </html>

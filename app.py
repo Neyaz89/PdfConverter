@@ -86,7 +86,7 @@ def convert_docx_to_pdf():
         docx_file.save(input_path)
 
         # Full path to LibreOffice executable
-        libreoffice_path = r"C:\Program Files\LibreOffice\program\soffice.exe"
+        libreoffice_path = r"C:\Program Files\LibreOffice\program\soffice"
         process = subprocess.run(
             [libreoffice_path, '--headless', '--convert-to', 'pdf', '--outdir', app.config['OUTPUT_FOLDER'], input_path],
             stdout=subprocess.PIPE,

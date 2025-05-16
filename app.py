@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader, PdfWriter
 from pdf2docx import Converter
 from PIL import Image
+import subprocess  # used for docx to pdf conversion
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -92,17 +93,28 @@ def convert_docx_to_pdf():
     input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     docx_file.save(input_path)
 
-    # Run LibreOffice conversion
-    os.system(f'soffice --headless --convert-to pdf --outdir "{app.config["OUTPUT_FOLDER"]}" "{input_path}"')
+    # Use LibreOffice to convert DOCX to PDF
+    try:
+        result = subprocess.run(
+            ['soffice', '--headless', '--convert-to', 'pdf', '--outdir', app.config['OUTPUT_FOLDER'], input_path],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        print("LibreOffice stdout:", result.stdout)
+        print("LibreOffice stderr:", result.stderr)
+    except subprocess.CalledProcessError as e:
+        print("LibreOffice failed:", e.stderr)
+        return "Conversion failed. Make sure LibreOffice is installed and on the PATH.", 500
 
-    # Find the converted file dynamically
     base_filename = os.path.splitext(filename)[0]
     output_file = os.path.join(app.config['OUTPUT_FOLDER'], f"{base_filename}.pdf")
 
     if os.path.exists(output_file):
         return send_file(output_file, as_attachment=True)
     else:
-        return "Conversion failed. Make sure LibreOffice is installed and on the PATH.", 500
+        return "Conversion failed. PDF file not created.", 500
 
 
 @app.route('/convert/pdf-to-docx', methods=['POST'])

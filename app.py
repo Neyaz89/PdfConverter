@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader, PdfWriter
 from pdf2docx import Converter
 from PIL import Image
+import platform
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -94,13 +95,15 @@ def convert_docx_to_pdf():
 
     docx_file.save(input_path)
 
-    # Full path to soffice.exe
-    libreoffice_path = '"C:\\Program Files\\LibreOffice\\program\\soffice.exe"'
-    convert_command = f'{libreoffice_path} --headless --convert-to pdf --outdir "{app.config["OUTPUT_FOLDER"]}" "{input_path}"'
+    # Detect platform and construct correct command
+    if platform.system() == 'Windows':
+        libreoffice_cmd = '"C:\\Program Files\\LibreOffice\\program\\soffice.exe"'
+    else:
+        libreoffice_cmd = 'libreoffice'
 
-    os.system(convert_command)
+    result = os.system(f'{libreoffice_cmd} --headless --convert-to pdf --outdir "{app.config["OUTPUT_FOLDER"]}" "{input_path}"')
 
-    if not os.path.exists(output_path):
+    if not os.path.exists(output_path) or result != 0:
         return "Conversion failed. Make sure LibreOffice is correctly installed.", 500
 
     return send_file(output_path, as_attachment=True)

@@ -90,17 +90,19 @@ def convert_docx_to_pdf():
     docx_file = request.files['file']
     filename = secure_filename(docx_file.filename)
     input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    output_path = os.path.join(app.config['OUTPUT_FOLDER'], filename.replace('.docx', '.pdf'))
-
     docx_file.save(input_path)
 
-    # Use LibreOffice to convert DOCX to PDF
-    os.system(f'libreoffice --headless --convert-to pdf --outdir "{app.config["OUTPUT_FOLDER"]}" "{input_path}"')
+    # Run LibreOffice conversion
+    os.system(f'soffice --headless --convert-to pdf --outdir "{app.config["OUTPUT_FOLDER"]}" "{input_path}"')
 
-    if not os.path.exists(output_path):
-        return "Conversion failed", 500
+    # Find the converted file dynamically
+    base_filename = os.path.splitext(filename)[0]
+    output_file = os.path.join(app.config['OUTPUT_FOLDER'], f"{base_filename}.pdf")
 
-    return send_file(output_path, as_attachment=True)
+    if os.path.exists(output_file):
+        return send_file(output_file, as_attachment=True)
+    else:
+        return "Conversion failed. Make sure LibreOffice is installed and on the PATH.", 500
 
 
 @app.route('/convert/pdf-to-docx', methods=['POST'])

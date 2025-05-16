@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, send_file
 import os
 import zipfile
-import fitz  # PyMuPDF
+import fitz  # PyMuPDF for PDF to JPG
 from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader, PdfWriter
 from pdf2docx import Converter
@@ -15,36 +15,29 @@ app.config['OUTPUT_FOLDER'] = 'converted'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
 
-
 @app.route('/')
 def home():
     return render_template('index.html')
-
 
 @app.route('/jpg-to-pdf')
 def jpg_to_pdf_page():
     return render_template('jpg_to_pdf.html')
 
-
 @app.route('/pdf-to-jpg')
 def pdf_to_jpg_page():
     return render_template('pdf_to_jpg.html')
-
 
 @app.route('/docx-to-pdf')
 def docx_to_pdf_page():
     return render_template('docx_to_pdf.html')
 
-
 @app.route('/pdf-to-docx')
 def pdf_to_docx_page():
     return render_template('pdf_to_docx.html')
 
-
 @app.route('/compress-pdf')
 def compress_pdf_page():
     return render_template('compress_pdf.html')
-
 
 @app.route('/convert/jpg-to-pdf', methods=['POST'])
 def convert_jpg_to_pdf():
@@ -60,7 +53,6 @@ def convert_jpg_to_pdf():
         image_list[0].save(output_path, save_all=True, append_images=image_list[1:])
 
     return send_file(output_path, as_attachment=True)
-
 
 @app.route('/convert/pdf-to-jpg', methods=['POST'])
 def convert_pdf_to_jpg():
@@ -85,7 +77,6 @@ def convert_pdf_to_jpg():
 
     return send_file(zip_path, as_attachment=True)
 
-
 @app.route('/convert/docx-to-pdf', methods=['POST'])
 def convert_docx_to_pdf():
     try:
@@ -94,9 +85,10 @@ def convert_docx_to_pdf():
         input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         docx_file.save(input_path)
 
-        # Use LibreOffice to convert DOCX to PDF
+        # Full path to LibreOffice executable
+        libreoffice_path = r"C:\Program Files\LibreOffice\program\soffice.exe"
         process = subprocess.run(
-            ['soffice', '--headless', '--convert-to', 'pdf', '--outdir', app.config['OUTPUT_FOLDER'], input_path],
+            [libreoffice_path, '--headless', '--convert-to', 'pdf', '--outdir', app.config['OUTPUT_FOLDER'], input_path],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
@@ -117,7 +109,6 @@ def convert_docx_to_pdf():
         print("Exception during DOCX to PDF:", str(e))
         return "Internal Server Error: " + str(e), 500
 
-
 @app.route('/convert/pdf-to-docx', methods=['POST'])
 def convert_pdf_to_docx():
     pdf_file = request.files['file']
@@ -130,7 +121,6 @@ def convert_pdf_to_docx():
     cv.close()
 
     return send_file(output_path, as_attachment=True)
-
 
 @app.route('/convert/compress-pdf', methods=['POST'])
 def compress_pdf():
@@ -150,7 +140,6 @@ def compress_pdf():
 
     return send_file(output_path, as_attachment=True)
 
-
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(debug=False, host='0.0.0.0', port=port)

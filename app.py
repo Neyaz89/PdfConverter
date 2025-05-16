@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request, send_file
 import os
 import zipfile
-import fitz  # PyMuPDF for PDF to JPG
+import fitz  # PyMuPDF
 from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader, PdfWriter
 from pdf2docx import Converter
 from PIL import Image
-import subprocess  # used for docx to pdf conversion
+import subprocess
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -88,33 +88,34 @@ def convert_pdf_to_jpg():
 
 @app.route('/convert/docx-to-pdf', methods=['POST'])
 def convert_docx_to_pdf():
-    docx_file = request.files['file']
-    filename = secure_filename(docx_file.filename)
-    input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    docx_file.save(input_path)
-
-    # Use LibreOffice to convert DOCX to PDF
     try:
-        result = subprocess.run(
+        docx_file = request.files['file']
+        filename = secure_filename(docx_file.filename)
+        input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        docx_file.save(input_path)
+
+        # Use LibreOffice to convert DOCX to PDF
+        process = subprocess.run(
             ['soffice', '--headless', '--convert-to', 'pdf', '--outdir', app.config['OUTPUT_FOLDER'], input_path],
-            check=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
         )
-        print("LibreOffice stdout:", result.stdout)
-        print("LibreOffice stderr:", result.stderr)
-    except subprocess.CalledProcessError as e:
-        print("LibreOffice failed:", e.stderr)
-        return "Conversion failed. Make sure LibreOffice is installed and on the PATH.", 500
 
-    base_filename = os.path.splitext(filename)[0]
-    output_file = os.path.join(app.config['OUTPUT_FOLDER'], f"{base_filename}.pdf")
+        print("LibreOffice stdout:", process.stdout)
+        print("LibreOffice stderr:", process.stderr)
 
-    if os.path.exists(output_file):
-        return send_file(output_file, as_attachment=True)
-    else:
-        return "Conversion failed. PDF file not created.", 500
+        base_filename = os.path.splitext(filename)[0]
+        output_path = os.path.join(app.config['OUTPUT_FOLDER'], f"{base_filename}.pdf")
+
+        if os.path.exists(output_path):
+            return send_file(output_path, as_attachment=True)
+        else:
+            return "Conversion failed. PDF file not created.", 500
+
+    except Exception as e:
+        print("Exception during DOCX to PDF:", str(e))
+        return "Internal Server Error: " + str(e), 500
 
 
 @app.route('/convert/pdf-to-docx', methods=['POST'])
@@ -152,4 +153,4 @@ def compress_pdf():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))
-    app.run(debug=False, host='0.0.0.0', port=port)
+    app.run(debug=True, host='0.0.0.0', port=port)

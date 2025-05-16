@@ -6,7 +6,6 @@ from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader, PdfWriter
 from pdf2docx import Converter
 from PIL import Image
-import subprocess
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -15,29 +14,36 @@ app.config['OUTPUT_FOLDER'] = 'converted'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
 
+
 @app.route('/')
 def home():
     return render_template('index.html')
+
 
 @app.route('/jpg-to-pdf')
 def jpg_to_pdf_page():
     return render_template('jpg_to_pdf.html')
 
+
 @app.route('/pdf-to-jpg')
 def pdf_to_jpg_page():
     return render_template('pdf_to_jpg.html')
+
 
 @app.route('/docx-to-pdf')
 def docx_to_pdf_page():
     return render_template('docx_to_pdf.html')
 
+
 @app.route('/pdf-to-docx')
 def pdf_to_docx_page():
     return render_template('pdf_to_docx.html')
 
+
 @app.route('/compress-pdf')
 def compress_pdf_page():
     return render_template('compress_pdf.html')
+
 
 @app.route('/convert/jpg-to-pdf', methods=['POST'])
 def convert_jpg_to_pdf():
@@ -53,6 +59,7 @@ def convert_jpg_to_pdf():
         image_list[0].save(output_path, save_all=True, append_images=image_list[1:])
 
     return send_file(output_path, as_attachment=True)
+
 
 @app.route('/convert/pdf-to-jpg', methods=['POST'])
 def convert_pdf_to_jpg():
@@ -77,37 +84,27 @@ def convert_pdf_to_jpg():
 
     return send_file(zip_path, as_attachment=True)
 
+
 @app.route('/convert/docx-to-pdf', methods=['POST'])
 def convert_docx_to_pdf():
-    try:
-        docx_file = request.files['file']
-        filename = secure_filename(docx_file.filename)
-        input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        docx_file.save(input_path)
+    docx_file = request.files['file']
+    filename = secure_filename(docx_file.filename)
+    input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    output_path = os.path.join(app.config['OUTPUT_FOLDER'], filename.replace('.docx', '.pdf'))
 
-        # Full path to LibreOffice executable
-        libreoffice_path = r"C:\Program Files\LibreOffice\program\soffice"
-        process = subprocess.run(
-            [libreoffice_path, '--headless', '--convert-to', 'pdf', '--outdir', app.config['OUTPUT_FOLDER'], input_path],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
+    docx_file.save(input_path)
 
-        print("LibreOffice stdout:", process.stdout)
-        print("LibreOffice stderr:", process.stderr)
+    # Full path to soffice.exe
+    libreoffice_path = '"C:\\Program Files\\LibreOffice\\program\\soffice.exe"'
+    convert_command = f'{libreoffice_path} --headless --convert-to pdf --outdir "{app.config["OUTPUT_FOLDER"]}" "{input_path}"'
 
-        base_filename = os.path.splitext(filename)[0]
-        output_path = os.path.join(app.config['OUTPUT_FOLDER'], f"{base_filename}.pdf")
+    os.system(convert_command)
 
-        if os.path.exists(output_path):
-            return send_file(output_path, as_attachment=True)
-        else:
-            return "Conversion failed. PDF file not created.", 500
+    if not os.path.exists(output_path):
+        return "Conversion failed. Make sure LibreOffice is correctly installed.", 500
 
-    except Exception as e:
-        print("Exception during DOCX to PDF:", str(e))
-        return "Internal Server Error: " + str(e), 500
+    return send_file(output_path, as_attachment=True)
+
 
 @app.route('/convert/pdf-to-docx', methods=['POST'])
 def convert_pdf_to_docx():
@@ -121,6 +118,7 @@ def convert_pdf_to_docx():
     cv.close()
 
     return send_file(output_path, as_attachment=True)
+
 
 @app.route('/convert/compress-pdf', methods=['POST'])
 def compress_pdf():
@@ -139,6 +137,7 @@ def compress_pdf():
         writer.write(f)
 
     return send_file(output_path, as_attachment=True)
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))

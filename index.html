@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neyaz's World - Premium PDF Converter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./src/styles/main.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Animated Background -->
+        <div class="background-container">
+            <div class="gradient-orb orb-1"></div>
+            <div class="gradient-orb orb-2"></div>
+            <div class="gradient-orb orb-3"></div>
+            <div class="floating-particles"></div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <div class="brand-icon">🌍</div>
+                    <span class="brand-text">Neyaz's World</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#tools" class="nav-link">Tools</a>
+                    <a href="#about" class="nav-link">About</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-text">✨ Premium PDF Tools</span>
+                </div>
+                <h1 class="hero-title">
+                    Transform Your Documents
+                    <span class="gradient-text">Effortlessly</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Experience the most advanced PDF converter with AI-powered optimization, 
+                    lightning-fast processing, and studio-quality results.
+                </p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">1M+</div>
+                        <div class="stat-label">Files Converted</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">99.9%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">5s</div>
+                        <div class="stat-label">Avg Processing</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Convert Section -->
+        <section class="quick-convert">
+            <div class="container">
+                <div class="quick-convert-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Quick Convert</h2>
+                        <p class="card-subtitle">Drag, drop, and convert instantly</p>
+                    </div>
+                    
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-content">
+                            <div class="upload-icon">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7,10 12,15 17,10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                            </div>
+                            <h3 class="upload-title">Drop files here or click to browse</h3>
+                            <p class="upload-subtitle">Supports PDF, JPG, PNG, DOCX • Max 50MB per file</p>
+                            <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.docx" hidden>
+                        </div>
+                        
+                        <div class="upload-progress" id="uploadProgress" style="display: none;">
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <div class="progress-text">Processing...</div>
+                        </div>
+                    </div>
+
+                    <div class="conversion-options" id="conversionOptions" style="display: none;">
+                        <div class="options-header">
+                            <h3>Conversion Options</h3>
+                        </div>
+                        <div class="options-grid">
+                            <button class="option-btn" data-type="pdf-to-jpg">
+                                <div class="option-icon">📄</div>
+                                <div class="option-text">
+                                    <div class="option-title">PDF to JPG</div>
+                                    <div class="option-desc">High-quality images</div>
+                                </div>
+                            </button>
+                            <button class="option-btn" data-type="jpg-to-pdf">
+                                <div class="option-icon">🖼️</div>
+                                <div class="option-text">
+                                    <div class="option-title">JPG to PDF</div>
+                                    <div class="option-desc">Merge & optimize</div>
+                                </div>
+                            </button>
+                            <button class="option-btn" data-type="pdf-to-docx">
+                                <div class="option-icon">📝</div>
+                                <div class="option-text">
+                                    <div class="option-title">PDF to DOCX</div>
+                                    <div class="option-desc">Editable documents</div>
+                                </div>
+                            </button>
+                            <button class="option-btn" data-type="compress-pdf">
+                                <div class="option-icon">📉</div>
+                                <div class="option-text">
+                                    <div class="option-title">Compress PDF</div>
+                                    <div class="option-desc">Reduce file size</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features" id="features">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Why Choose Neyaz's World?</h2>
+                    <p class="section-subtitle">Advanced features that set us apart from the competition</p>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3 class="feature-title">Lightning Fast</h3>
+                        <p class="feature-desc">AI-powered processing engine delivers results in seconds, not minutes.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3 class="feature-title">100% Secure</h3>
+                        <p class="feature-desc">Files are processed locally and automatically deleted after conversion.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3 class="feature-title">Pixel Perfect</h3>
+                        <p class="feature-desc">Advanced algorithms ensure maximum quality retention in every conversion.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <h3 class="feature-title">Any Device</h3>
+                        <p class="feature-desc">Works seamlessly on desktop, tablet, and mobile devices.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🚀</div>
+                        <h3 class="feature-title">Batch Processing</h3>
+                        <p class="feature-desc">Convert multiple files simultaneously with intelligent optimization.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💎</div>
+                        <h3 class="feature-title">Premium Quality</h3>
+                        <p class="feature-desc">Professional-grade output suitable for business and personal use.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Section -->
+        <section class="tools" id="tools">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Professional Tools</h2>
+                    <p class="section-subtitle">Complete suite of document conversion tools</p>
+                </div>
+                
+                <div class="tools-grid">
+                    <div class="tool-card" data-tool="pdf-to-jpg">
+                        <div class="tool-header">
+                            <div class="tool-icon">📄→🖼️</div>
+                            <div class="tool-badge">Popular</div>
+                        </div>
+                        <h3 class="tool-title">PDF to JPG</h3>
+                        <p class="tool-desc">Convert PDF pages to high-resolution images with customizable DPI settings.</p>
+                        <div class="tool-features">
+                            <span class="tool-feature">• Batch conversion</span>
+                            <span class="tool-feature">• Custom DPI</span>
+                            <span class="tool-feature">• ZIP download</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card" data-tool="jpg-to-pdf">
+                        <div class="tool-header">
+                            <div class="tool-icon">🖼️→📄</div>
+                            <div class="tool-badge">Smart</div>
+                        </div>
+                        <h3 class="tool-title">JPG to PDF</h3>
+                        <p class="tool-desc">Merge multiple images into a single PDF with automatic optimization.</p>
+                        <div class="tool-features">
+                            <span class="tool-feature">• Auto-resize</span>
+                            <span class="tool-feature">• Page ordering</span>
+                            <span class="tool-feature">• Compression</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card" data-tool="pdf-to-docx">
+                        <div class="tool-header">
+                            <div class="tool-icon">📄→📝</div>
+                            <div class="tool-badge">AI-Powered</div>
+                        </div>
+                        <h3 class="tool-title">PDF to DOCX</h3>
+                        <p class="tool-desc">Convert PDFs to editable Word documents with layout preservation.</p>
+                        <div class="tool-features">
+                            <span class="tool-feature">• Layout intact</span>
+                            <span class="tool-feature">• Text recognition</span>
+                            <span class="tool-feature">• Format retention</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card" data-tool="compress-pdf">
+                        <div class="tool-header">
+                            <div class="tool-icon">📉</div>
+                            <div class="tool-badge">Optimized</div>
+                        </div>
+                        <h3 class="tool-title">Compress PDF</h3>
+                        <p class="tool-desc">Reduce file size while maintaining visual quality using advanced algorithms.</p>
+                        <div class="tool-features">
+                            <span class="tool-feature">• Smart compression</span>
+                            <span class="tool-feature">• Quality control</span>
+                            <span class="tool-feature">• Size preview</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-brand">
+                        <div class="brand-icon">🌍</div>
+                        <span class="brand-text">Neyaz's World</span>
+                    </div>
+                    <p class="footer-text">
+                        Premium document conversion tools designed for professionals and individuals who demand excellence.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="./src/scripts/main.js"></script>
+</body>
+</html>

@@ -158,13 +158,13 @@
                                 <div class="icon-pulse"></div>
                             </div>
                             <h3 class="upload-title">Drop files here or click to browse</h3>
-                            <p class="upload-subtitle">Supports PDF, JPG, PNG, DOCX • Max 100MB per file</p>
+                            <p class="upload-subtitle">Supports PDF, JPG, PNG, DOCX, XLSX, CSV, TXT • Max 100MB per file</p>
                             <div class="upload-features">
                                 <span class="feature-tag">🔒 100% Secure</span>
                                 <span class="feature-tag">⚡ Lightning Fast</span>
                                 <span class="feature-tag">🎯 Pixel Perfect</span>
                             </div>
-                            <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.docx" hidden>
+                            <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.docx,.doc,.xlsx,.xls,.csv,.txt,.gif,.bmp,.webp" hidden>
                         </div>
                         
                         <div class="upload-progress" id="uploadProgress" style="display: none;">
@@ -220,6 +220,16 @@
                                 <div class="option-badge">AI</div>
                                 <div class="option-glow"></div>
                             </button>
+                            <button class="option-btn" data-type="docx-to-pdf">
+                                <div class="option-background"></div>
+                                <div class="option-icon">📝→📄</div>
+                                <div class="option-text">
+                                    <div class="option-title">DOCX to PDF</div>
+                                    <div class="option-desc">Professional document conversion</div>
+                                </div>
+                                <div class="option-badge">Pro</div>
+                                <div class="option-glow"></div>
+                            </button>
                             <button class="option-btn" data-type="compress-pdf">
                                 <div class="option-background"></div>
                                 <div class="option-icon">📉</div>
@@ -227,9 +237,81 @@
                                     <div class="option-title">Compress PDF</div>
                                     <div class="option-desc">Intelligent size reduction</div>
                                 </div>
-                                <div class="option-badge">Pro</div>
+                                <div class="option-badge">Optimize</div>
                                 <div class="option-glow"></div>
                             </button>
+                            <button class="option-btn" data-type="excel-to-pdf">
+                                <div class="option-background"></div>
+                                <div class="option-icon">📊→📄</div>
+                                <div class="option-text">
+                                    <div class="option-title">Excel to PDF</div>
+                                    <div class="option-desc">Spreadsheet to document conversion</div>
+                                </div>
+                                <div class="option-badge">Business</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            <button class="option-btn" data-type="csv-to-pdf">
+                                <div class="option-background"></div>
+                                <div class="option-icon">📋→📄</div>
+                                <div class="option-text">
+                                    <div class="option-title">CSV to PDF</div>
+                                    <div class="option-desc">Data table to PDF conversion</div>
+                                </div>
+                                <div class="option-badge">Data</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            <button class="option-btn" data-type="txt-to-pdf">
+                                <div class="option-background"></div>
+                                <div class="option-icon">📝→📄</div>
+                                <div class="option-text">
+                                    <div class="option-title">Text to PDF</div>
+                                    <div class="option-desc">Plain text to formatted PDF</div>
+                                </div>
+                                <div class="option-badge">Simple</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            <button class="option-btn" data-type="merge-pdf">
+                                <div class="option-background"></div>
+                                <div class="option-icon">📄+📄</div>
+                                <div class="option-text">
+                                    <div class="option-title">Merge PDFs</div>
+                                    <div class="option-desc">Combine multiple PDFs into one</div>
+                                </div>
+                                <div class="option-badge">Combine</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            <button class="option-btn" data-type="split-pdf">
+                                <div class="option-background"></div>
+                                <div class="option-icon">📄✂️</div>
+                                <div class="option-text">
+                                    <div class="option-title">Split PDF</div>
+                                    <div class="option-desc">Extract pages into separate files</div>
+                                </div>
+                                <div class="option-badge">Extract</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            <button class="option-btn" data-type="image-convert">
+                                <div class="option-background"></div>
+                                <div class="option-icon">🖼️↔️</div>
+                                <div class="option-text">
+                                    <div class="option-title">Image Convert</div>
+                                    <div class="option-desc">Convert between image formats</div>
+                                </div>
+                                <div class="option-badge">Format</div>
+                                <div class="option-glow"></div>
+                            </button>
+                        </div>
+                        
+                        <!-- Image format selection for image conversion -->
+                        <div class="format-selection" id="formatSelection" style="display: none;">
+                            <h4>Select Output Format:</h4>
+                            <div class="format-buttons">
+                                <button class="format-btn" data-format="jpeg">JPEG</button>
+                                <button class="format-btn" data-format="png">PNG</button>
+                                <button class="format-btn" data-format="webp">WebP</button>
+                                <button class="format-btn" data-format="bmp">BMP</button>
+                                <button class="format-btn" data-format="tiff">TIFF</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -503,6 +585,86 @@
                             </div>
                             <div class="stat-item">
                                 <span class="stat-number">1.5s</span>
+                                <span class="stat-label">Avg Time</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tool-card" data-tool="excel-to-pdf">
+                        <div class="tool-background"></div>
+                        <div class="tool-header">
+                            <div class="tool-icon">📊→📄</div>
+                            <div class="tool-badges">
+                                <div class="tool-badge smart">Business</div>
+                                <div class="tool-rating">
+                                    <span class="stars">★★★★★</span>
+                                    <span class="rating-text">4.8</span>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="tool-title">Excel to PDF</h3>
+                        <p class="tool-desc">Convert spreadsheets to professional PDFs with preserved formatting and data integrity.</p>
+                        <div class="tool-features">
+                            <div class="feature-item">
+                                <span class="feature-icon">📊</span>
+                                <span class="feature-text">Preserve table formatting</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">🎯</span>
+                                <span class="feature-text">Data integrity maintained</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">📋</span>
+                                <span class="feature-text">Multiple sheet support</span>
+                            </div>
+                        </div>
+                        <div class="tool-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">450K+</span>
+                                <span class="stat-label">Conversions</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">3.1s</span>
+                                <span class="stat-label">Avg Time</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tool-card" data-tool="merge-pdf">
+                        <div class="tool-background"></div>
+                        <div class="tool-header">
+                            <div class="tool-icon">📄+📄</div>
+                            <div class="tool-badges">
+                                <div class="tool-badge optimized">Combine</div>
+                                <div class="tool-rating">
+                                    <span class="stars">★★★★★</span>
+                                    <span class="rating-text">4.9</span>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="tool-title">PDF Merger</h3>
+                        <p class="tool-desc">Seamlessly combine multiple PDF files into one document with intelligent page ordering.</p>
+                        <div class="tool-features">
+                            <div class="feature-item">
+                                <span class="feature-icon">🔗</span>
+                                <span class="feature-text">Unlimited file merging</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">📋</span>
+                                <span class="feature-text">Custom page ordering</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">⚡</span>
+                                <span class="feature-text">Batch processing</span>
+                            </div>
+                        </div>
+                        <div class="tool-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">320K+</span>
+                                <span class="stat-label">Merges</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">2.8s</span>
                                 <span class="stat-label">Avg Time</span>
                             </div>
                         </div>

@@ -11,8 +11,10 @@ class PDFConverter {
         this.fileInput = document.getElementById('fileInput');
         this.uploadProgress = document.getElementById('uploadProgress');
         this.conversionOptions = document.getElementById('conversionOptions');
+        this.formatSelection = document.getElementById('formatSelection');
         this.selectedFiles = [];
         this.selectedConversionType = null;
+        this.selectedFormat = null;
     }
 
     setupEventListeners() {
@@ -45,6 +47,13 @@ class PDFConverter {
         document.querySelectorAll('.option-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 this.selectConversionType(btn.dataset.type);
+            });
+        });
+
+        // Format selection buttons
+        document.querySelectorAll('.format-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.selectFormat(btn.dataset.format);
             });
         });
 
@@ -376,7 +385,7 @@ class PDFConverter {
                 setTimeout(() => {
                     option.style.opacity = '1';
                     option.style.transform = 'translateY(0) scale(1)';
-                }, index * 150);
+                }, index * 100);
             });
         }, 800);
     }
@@ -397,10 +406,35 @@ class PDFConverter {
         // Add selection confirmation animation
         this.showSelectionConfirmation(selectedBtn);
         
+        // Show format selection for image conversion
+        if (type === 'image-convert') {
+            this.formatSelection.style.display = 'block';
+            return;
+        } else {
+            this.formatSelection.style.display = 'none';
+        }
+        
         // Auto-start conversion after selection
         setTimeout(() => {
             this.startConversion();
         }, 1000);
+    }
+
+    selectFormat(format) {
+        this.selectedFormat = format;
+        
+        // Update format button selection
+        document.querySelectorAll('.format-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        
+        const selectedBtn = document.querySelector(`[data-format="${format}"]`);
+        selectedBtn.classList.add('selected');
+        
+        // Start conversion after format selection
+        setTimeout(() => {
+            this.startConversion();
+        }, 500);
     }
 
     showSelectionConfirmation(button) {
@@ -451,7 +485,14 @@ class PDFConverter {
             'pdf-to-jpg': 'PDF to JPG Converter',
             'jpg-to-pdf': 'JPG to PDF Merger',
             'pdf-to-docx': 'PDF to DOCX Editor',
-            'compress-pdf': 'PDF Compressor Pro'
+            'docx-to-pdf': 'DOCX to PDF Converter',
+            'compress-pdf': 'PDF Compressor Pro',
+            'excel-to-pdf': 'Excel to PDF Converter',
+            'csv-to-pdf': 'CSV to PDF Converter',
+            'txt-to-pdf': 'Text to PDF Converter',
+            'merge-pdf': 'PDF Merger',
+            'split-pdf': 'PDF Splitter',
+            'image-convert': 'Image Format Converter'
         };
         return toolNames[tool] || 'Tool';
     }
@@ -461,15 +502,26 @@ class PDFConverter {
             return;
         }
 
+        // Check if image conversion requires format selection
+        if (this.selectedConversionType === 'image-convert' && !this.selectedFormat) {
+            this.showNotification('Please select an output format for image conversion.', 'warning');
+            return;
+        }
+
         // Create form data
         const formData = new FormData();
         
-        if (this.selectedConversionType === 'jpg-to-pdf') {
+        if (['jpg-to-pdf', 'merge-pdf'].includes(this.selectedConversionType)) {
             this.selectedFiles.forEach(file => {
                 formData.append('files', file);
             });
         } else {
             formData.append('file', this.selectedFiles[0]);
+        }
+
+        // Add format for image conversion
+        if (this.selectedConversionType === 'image-convert' && this.selectedFormat) {
+            formData.append('format', this.selectedFormat);
         }
 
         // Show enhanced processing state
@@ -484,7 +536,9 @@ class PDFConverter {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Conversion failed');
+                return response.json().then(err => {
+                    throw new Error(err.error || 'Conversion failed');
+                });
             }
             return response.blob();
         })
@@ -494,7 +548,7 @@ class PDFConverter {
         })
         .catch(error => {
             console.error('Conversion error:', error);
-            this.showErrorState();
+            this.showErrorState(error.message);
         });
     }
 
@@ -504,7 +558,13 @@ class PDFConverter {
             'jpg-to-pdf': '/convert/jpg-to-pdf',
             'pdf-to-docx': '/convert/pdf-to-docx',
             'docx-to-pdf': '/convert/docx-to-pdf',
-            'compress-pdf': '/convert/compress-pdf'
+            'compress-pdf': '/convert/compress-pdf',
+            'excel-to-pdf': '/convert/excel-to-pdf',
+            'csv-to-pdf': '/convert/csv-to-pdf',
+            'txt-to-pdf': '/convert/txt-to-pdf',
+            'image-convert': '/convert/image-convert',
+            'merge-pdf': '/convert/merge-pdf',
+            'split-pdf': '/convert/split-pdf'
         };
         return endpoints[type];
     }
@@ -515,7 +575,13 @@ class PDFConverter {
             'jpg-to-pdf': 'merged-document.pdf',
             'pdf-to-docx': 'editable-document.docx',
             'docx-to-pdf': 'converted-document.pdf',
-            'compress-pdf': 'compressed-document.pdf'
+            'compress-pdf': 'compressed-document.pdf',
+            'excel-to-pdf': 'excel-converted.pdf',
+            'csv-to-pdf': 'csv-converted.pdf',
+            'txt-to-pdf': 'text-converted.pdf',
+            'image-convert': `converted-image.${this.selectedFormat || 'jpg'}`,
+            'merge-pdf': 'merged-document.pdf',
+            'split-pdf': 'split-pages.zip'
         };
         return fileNames[type];
     }
@@ -528,6 +594,7 @@ class PDFConverter {
         progressPercentage.textContent = '0%';
         
         this.conversionOptions.style.display = 'none';
+        this.formatSelection.style.display = 'none';
         this.uploadProgress.style.display = 'block';
         
         // Enhanced progress animation
@@ -590,13 +657,13 @@ class PDFConverter {
         }, 4000);
     }
 
-    showErrorState() {
+    showErrorState(errorMessage = 'Conversion failed') {
         if (this.processingInterval) {
             clearInterval(this.processingInterval);
         }
         
         const progressText = document.querySelector('.progress-text');
-        progressText.textContent = '❌ Conversion failed. Please try again or contact support.';
+        progressText.textContent = `❌ ${errorMessage}. Please try again or contact support.`;
         progressText.style.color = 'var(--error-500)';
         
         // Add error animation
@@ -606,7 +673,7 @@ class PDFConverter {
         }
         
         // Show error notification
-        this.showNotification('Conversion failed. Please try again or contact our support team.', 'error');
+        this.showNotification(`${errorMessage}. Please try again or contact our support team.`, 'error');
         
         setTimeout(() => {
             this.resetUploadState();
@@ -619,11 +686,13 @@ class PDFConverter {
         
         this.uploadProgress.style.display = 'none';
         this.conversionOptions.style.display = 'none';
+        this.formatSelection.style.display = 'none';
         uploadContent.style.display = 'block';
         
         progressText.style.color = 'var(--primary-600)';
         this.selectedFiles = [];
         this.selectedConversionType = null;
+        this.selectedFormat = null;
         this.fileInput.value = '';
         
         // Reset processing animation
@@ -635,6 +704,11 @@ class PDFConverter {
                 <div class="processing-dot"></div>
             `;
         }
+
+        // Reset format buttons
+        document.querySelectorAll('.format-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
     }
 
     downloadFile(blob, filename) {
@@ -988,7 +1062,6 @@ function addNotificationStyles() {
         .demo-close {
             background: none;
             border: none;
-            
             font-size: var(--font-size-2xl);
             cursor: pointer;
             color: var(--neutral-500);
@@ -1130,6 +1203,48 @@ function addNotificationStyles() {
             animation: slideInUp 0.6s ease forwards;
         }
         
+        .format-selection {
+            margin-top: var(--space-8);
+            padding-top: var(--space-8);
+            border-top: 2px solid var(--neutral-200);
+            text-align: center;
+        }
+        
+        .format-selection h4 {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--neutral-800);
+            margin-bottom: var(--space-4);
+        }
+        
+        .format-buttons {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-3);
+            flex-wrap: wrap;
+        }
+        
+        .format-btn {
+            padding: var(--space-3) var(--space-6);
+            background: white;
+            border: 2px solid var(--neutral-300);
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+        
+        .format-btn:hover {
+            border-color: var(--primary-400);
+            background: var(--primary-50);
+        }
+        
+        .format-btn.selected {
+            border-color: var(--primary-500);
+            background: var(--primary-100);
+            color: var(--primary-700);
+        }
+        
         /* Mobile menu styles */
         @media (max-width: 768px) {
             .nav-links {
@@ -1161,6 +1276,15 @@ function addNotificationStyles() {
             
             .mobile-menu-toggle.active span:nth-child(3) {
                 transform: rotate(-45deg) translate(7px, -6px);
+            }
+            
+            .format-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .format-btn {
+                width: 200px;
             }
         }
     `;

@@ -1089,19 +1089,19 @@ body {
 
 .options-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: var(--space-6);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-4);
 }
 
 .option-btn {
     position: relative;
     display: flex;
     align-items: center;
-    gap: var(--space-4);
-    padding: var(--space-8);
+    gap: var(--space-3);
+    padding: var(--space-6);
     background: white;
     border: 2px solid var(--neutral-200);
-    border-radius: var(--radius-2xl);
+    border-radius: var(--radius-xl);
     cursor: pointer;
     transition: var(--transition-normal);
     text-align: left;
@@ -1125,8 +1125,8 @@ body {
 
 .option-btn:hover {
     border-color: var(--primary-400);
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-xl);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
 }
 
 .option-btn.selected {
@@ -1139,7 +1139,7 @@ body {
 }
 
 .option-icon {
-    font-size: var(--font-size-4xl);
+    font-size: var(--font-size-3xl);
     flex-shrink: 0;
     position: relative;
     z-index: 2;
@@ -1152,26 +1152,26 @@ body {
 }
 
 .option-title {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     font-weight: 700;
     color: var(--neutral-800);
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-1);
     font-family: var(--font-family-primary);
 }
 
 .option-desc {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
     color: var(--neutral-600);
-    line-height: 1.5;
+    line-height: 1.4;
 }
 
 .option-badge {
     position: absolute;
-    top: var(--space-3);
-    right: var(--space-3);
+    top: var(--space-2);
+    right: var(--space-2);
     background: linear-gradient(135deg, var(--primary-500), var(--secondary-500));
     color: white;
-    padding: var(--space-1) var(--space-3);
+    padding: var(--space-1) var(--space-2);
     border-radius: var(--radius-full);
     font-size: var(--font-size-xs);
     font-weight: 700;
@@ -1189,7 +1189,7 @@ body {
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), transparent);
     opacity: 0;
     transition: var(--transition-normal);
-    border-radius: var(--radius-2xl);
+    border-radius: var(--radius-xl);
 }
 
 .option-btn:hover .option-glow {
@@ -1757,6 +1757,10 @@ body {
     .tools-grid {
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     }
+
+    .options-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
 }
 
 @media (max-width: 768px) {
@@ -1855,6 +1859,23 @@ body {
     
     .card-title {
         font-size: var(--font-size-3xl);
+    }
+
+    .option-btn {
+        padding: var(--space-4);
+        gap: var(--space-2);
+    }
+
+    .option-icon {
+        font-size: var(--font-size-2xl);
+    }
+
+    .option-title {
+        font-size: var(--font-size-base);
+    }
+
+    .option-desc {
+        font-size: var(--font-size-xs);
     }
 }
 

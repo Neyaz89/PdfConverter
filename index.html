@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neyaz's World - Premium PDF Converter</title>
+    <title>Neyaz's World - Premium Document Converter</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -71,7 +71,7 @@
             <div class="hero-content">
                 <div class="hero-badge">
                     <div class="badge-icon">✨</div>
-                    <span class="badge-text">World's Most Advanced PDF Converter</span>
+                    <span class="badge-text">World's Most Advanced Document Converter</span>
                     <div class="badge-shine"></div>
                 </div>
                 <h1 class="hero-title">
@@ -96,7 +96,7 @@
                 </div>
                 <div class="hero-stats">
                     <div class="stat-item">
-                        <div class="stat-number" data-count="2500000">0</div>
+                        <div class="stat-number" data-count="5000000">0</div>
                         <div class="stat-label">Files Converted</div>
                         <div class="stat-glow"></div>
                     </div>
@@ -106,7 +106,7 @@
                         <div class="stat-glow"></div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number" data-count="3">0</div>
+                        <div class="stat-number" data-count="2">0</div>
                         <div class="stat-label">Seconds Average</div>
                         <div class="stat-glow"></div>
                     </div>
@@ -138,10 +138,10 @@
                     <div class="card-header">
                         <h2 class="card-title">
                             <span class="title-icon">⚡</span>
-                            Quick Convert
+                            Universal Document Converter
                             <div class="title-glow"></div>
                         </h2>
-                        <p class="card-subtitle">Drag, drop, and witness the magic happen instantly</p>
+                        <p class="card-subtitle">30+ conversion tools in one powerful platform</p>
                     </div>
                     
                     <div class="upload-zone" id="uploadZone">
@@ -158,13 +158,14 @@
                                 <div class="icon-pulse"></div>
                             </div>
                             <h3 class="upload-title">Drop files here or click to browse</h3>
-                            <p class="upload-subtitle">Supports PDF, JPG, PNG, DOCX, XLSX, CSV, TXT • Max 100MB per file</p>
+                            <p class="upload-subtitle">Supports 50+ file formats • Max 500MB per file</p>
                             <div class="upload-features">
                                 <span class="feature-tag">🔒 100% Secure</span>
                                 <span class="feature-tag">⚡ Lightning Fast</span>
                                 <span class="feature-tag">🎯 Pixel Perfect</span>
+                                <span class="feature-tag">🤖 AI Powered</span>
                             </div>
-                            <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.docx,.doc,.xlsx,.xls,.csv,.txt,.gif,.bmp,.webp" hidden>
+                            <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.docx,.doc,.xlsx,.xls,.csv,.txt,.gif,.bmp,.webp,.tiff,.html,.md,.json,.xml,.zip,.rar" hidden>
                         </div>
                         
                         <div class="upload-progress" id="uploadProgress" style="display: none;">
@@ -187,39 +188,43 @@
                     <div class="conversion-options" id="conversionOptions" style="display: none;">
                         <div class="options-header">
                             <h3>Choose Your Conversion Magic</h3>
-                            <p>Select the perfect transformation for your documents</p>
+                            <p>Select from our comprehensive suite of document transformation tools</p>
                         </div>
                         <div class="options-grid">
-                            <button class="option-btn" data-type="pdf-to-jpg">
+                            <!-- PDF Conversions -->
+                            <button class="option-btn" data-type="pdf-to-image">
                                 <div class="option-background"></div>
                                 <div class="option-icon">📄→🖼️</div>
                                 <div class="option-text">
-                                    <div class="option-title">PDF to JPG</div>
-                                    <div class="option-desc">Crystal-clear high-resolution images</div>
+                                    <div class="option-title">PDF to Images</div>
+                                    <div class="option-desc">Convert to JPG, PNG, WebP, TIFF</div>
                                 </div>
                                 <div class="option-badge">Popular</div>
                                 <div class="option-glow"></div>
                             </button>
-                            <button class="option-btn" data-type="jpg-to-pdf">
+                            
+                            <button class="option-btn" data-type="image-to-pdf">
                                 <div class="option-background"></div>
                                 <div class="option-icon">🖼️→📄</div>
                                 <div class="option-text">
-                                    <div class="option-title">JPG to PDF</div>
-                                    <div class="option-desc">Smart merge with auto-optimization</div>
+                                    <div class="option-title">Images to PDF</div>
+                                    <div class="option-desc">Smart merge with layout options</div>
                                 </div>
                                 <div class="option-badge">Smart</div>
                                 <div class="option-glow"></div>
                             </button>
+                            
                             <button class="option-btn" data-type="pdf-to-docx">
                                 <div class="option-background"></div>
                                 <div class="option-icon">📄→📝</div>
                                 <div class="option-text">
                                     <div class="option-title">PDF to DOCX</div>
-                                    <div class="option-desc">AI-powered editable documents</div>
+                                    <div class="option-desc">AI-powered with OCR support</div>
                                 </div>
                                 <div class="option-badge">AI</div>
                                 <div class="option-glow"></div>
                             </button>
+                            
                             <button class="option-btn" data-type="docx-to-pdf">
                                 <div class="option-background"></div>
                                 <div class="option-icon">📝→📄</div>
@@ -230,87 +235,211 @@
                                 <div class="option-badge">Pro</div>
                                 <div class="option-glow"></div>
                             </button>
+                            
                             <button class="option-btn" data-type="compress-pdf">
                                 <div class="option-background"></div>
                                 <div class="option-icon">📉</div>
                                 <div class="option-text">
                                     <div class="option-title">Compress PDF</div>
-                                    <div class="option-desc">Intelligent size reduction</div>
+                                    <div class="option-desc">Advanced compression algorithms</div>
                                 </div>
                                 <div class="option-badge">Optimize</div>
                                 <div class="option-glow"></div>
                             </button>
-                            <button class="option-btn" data-type="excel-to-pdf">
-                                <div class="option-background"></div>
-                                <div class="option-icon">📊→📄</div>
-                                <div class="option-text">
-                                    <div class="option-title">Excel to PDF</div>
-                                    <div class="option-desc">Spreadsheet to document conversion</div>
-                                </div>
-                                <div class="option-badge">Business</div>
-                                <div class="option-glow"></div>
-                            </button>
-                            <button class="option-btn" data-type="csv-to-pdf">
-                                <div class="option-background"></div>
-                                <div class="option-icon">📋→📄</div>
-                                <div class="option-text">
-                                    <div class="option-title">CSV to PDF</div>
-                                    <div class="option-desc">Data table to PDF conversion</div>
-                                </div>
-                                <div class="option-badge">Data</div>
-                                <div class="option-glow"></div>
-                            </button>
-                            <button class="option-btn" data-type="txt-to-pdf">
-                                <div class="option-background"></div>
-                                <div class="option-icon">📝→📄</div>
-                                <div class="option-text">
-                                    <div class="option-title">Text to PDF</div>
-                                    <div class="option-desc">Plain text to formatted PDF</div>
-                                </div>
-                                <div class="option-badge">Simple</div>
-                                <div class="option-glow"></div>
-                            </button>
+                            
                             <button class="option-btn" data-type="merge-pdf">
                                 <div class="option-background"></div>
                                 <div class="option-icon">📄+📄</div>
                                 <div class="option-text">
                                     <div class="option-title">Merge PDFs</div>
-                                    <div class="option-desc">Combine multiple PDFs into one</div>
+                                    <div class="option-desc">Combine multiple PDFs seamlessly</div>
                                 </div>
                                 <div class="option-badge">Combine</div>
                                 <div class="option-glow"></div>
                             </button>
+                            
                             <button class="option-btn" data-type="split-pdf">
                                 <div class="option-background"></div>
                                 <div class="option-icon">📄✂️</div>
                                 <div class="option-text">
                                     <div class="option-title">Split PDF</div>
-                                    <div class="option-desc">Extract pages into separate files</div>
+                                    <div class="option-desc">Extract pages with custom ranges</div>
                                 </div>
                                 <div class="option-badge">Extract</div>
                                 <div class="option-glow"></div>
                             </button>
-                            <button class="option-btn" data-type="image-convert">
+                            
+                            <button class="option-btn" data-type="pdf-to-html">
                                 <div class="option-background"></div>
-                                <div class="option-icon">🖼️↔️</div>
+                                <div class="option-icon">📄→🌐</div>
                                 <div class="option-text">
-                                    <div class="option-title">Image Convert</div>
-                                    <div class="option-desc">Convert between image formats</div>
+                                    <div class="option-title">PDF to HTML</div>
+                                    <div class="option-desc">Web-ready document conversion</div>
+                                </div>
+                                <div class="option-badge">Web</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            
+                            <!-- Office Documents -->
+                            <button class="option-btn" data-type="excel-to-pdf">
+                                <div class="option-background"></div>
+                                <div class="option-icon">📊→📄</div>
+                                <div class="option-text">
+                                    <div class="option-title">Excel to PDF</div>
+                                    <div class="option-desc">Preserve formatting and data</div>
+                                </div>
+                                <div class="option-badge">Business</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            
+                            <button class="option-btn" data-type="text-to-pdf">
+                                <div class="option-background"></div>
+                                <div class="option-icon">📝→📄</div>
+                                <div class="option-text">
+                                    <div class="option-title">Text to PDF</div>
+                                    <div class="option-desc">Custom fonts and formatting</div>
                                 </div>
                                 <div class="option-badge">Format</div>
                                 <div class="option-glow"></div>
                             </button>
+                            
+                            <button class="option-btn" data-type="html-to-pdf">
+                                <div class="option-background"></div>
+                                <div class="option-icon">🌐→📄</div>
+                                <div class="option-text">
+                                    <div class="option-title">HTML to PDF</div>
+                                    <div class="option-desc">Web page to document conversion</div>
+                                </div>
+                                <div class="option-badge">Web</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            
+                            <button class="option-btn" data-type="markdown-to-pdf">
+                                <div class="option-background"></div>
+                                <div class="option-icon">📝→📄</div>
+                                <div class="option-text">
+                                    <div class="option-title">Markdown to PDF</div>
+                                    <div class="option-desc">Developer-friendly conversion</div>
+                                </div>
+                                <div class="option-badge">Dev</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            
+                            <!-- Image Tools -->
+                            <button class="option-btn" data-type="image-format">
+                                <div class="option-background"></div>
+                                <div class="option-icon">🖼️↔️</div>
+                                <div class="option-text">
+                                    <div class="option-title">Image Converter</div>
+                                    <div class="option-desc">Convert between all image formats</div>
+                                </div>
+                                <div class="option-badge">Universal</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            
+                            <button class="option-btn" data-type="optimize-image">
+                                <div class="option-background"></div>
+                                <div class="option-icon">🎯</div>
+                                <div class="option-text">
+                                    <div class="option-title">Image Optimizer</div>
+                                    <div class="option-desc">Reduce size, maintain quality</div>
+                                </div>
+                                <div class="option-badge">Optimize</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            
+                            <!-- Data Conversions -->
+                            <button class="option-btn" data-type="json-to-csv">
+                                <div class="option-background"></div>
+                                <div class="option-icon">📋→📊</div>
+                                <div class="option-text">
+                                    <div class="option-title">JSON to CSV</div>
+                                    <div class="option-desc">Data format transformation</div>
+                                </div>
+                                <div class="option-badge">Data</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            
+                            <button class="option-btn" data-type="csv-to-json">
+                                <div class="option-background"></div>
+                                <div class="option-icon">📊→📋</div>
+                                <div class="option-text">
+                                    <div class="option-title">CSV to JSON</div>
+                                    <div class="option-desc">Structured data conversion</div>
+                                </div>
+                                <div class="option-badge">Data</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            
+                            <!-- Archive Tools -->
+                            <button class="option-btn" data-type="create-archive">
+                                <div class="option-background"></div>
+                                <div class="option-icon">📦</div>
+                                <div class="option-text">
+                                    <div class="option-title">Create Archive</div>
+                                    <div class="option-desc">Compress files into ZIP</div>
+                                </div>
+                                <div class="option-badge">Compress</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            
+                            <button class="option-btn" data-type="extract-archive">
+                                <div class="option-background"></div>
+                                <div class="option-icon">📦→📁</div>
+                                <div class="option-text">
+                                    <div class="option-title">Extract Archive</div>
+                                    <div class="option-desc">Unpack ZIP and RAR files</div>
+                                </div>
+                                <div class="option-badge">Extract</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            
+                            <!-- Generators -->
+                            <button class="option-btn" data-type="generate-qr">
+                                <div class="option-background"></div>
+                                <div class="option-icon">📱</div>
+                                <div class="option-text">
+                                    <div class="option-title">QR Code Generator</div>
+                                    <div class="option-desc">Create custom QR codes</div>
+                                </div>
+                                <div class="option-badge">Generate</div>
+                                <div class="option-glow"></div>
+                            </button>
+                            
+                            <button class="option-btn" data-type="generate-barcode">
+                                <div class="option-background"></div>
+                                <div class="option-icon">📊</div>
+                                <div class="option-text">
+                                    <div class="option-title">Barcode Generator</div>
+                                    <div class="option-desc">Multiple barcode formats</div>
+                                </div>
+                                <div class="option-badge">Generate</div>
+                                <div class="option-glow"></div>
+                            </button>
                         </div>
                         
-                        <!-- Image format selection for image conversion -->
+                        <!-- Format selection for specific conversions -->
                         <div class="format-selection" id="formatSelection" style="display: none;">
                             <h4>Select Output Format:</h4>
-                            <div class="format-buttons">
-                                <button class="format-btn" data-format="jpeg">JPEG</button>
-                                <button class="format-btn" data-format="png">PNG</button>
-                                <button class="format-btn" data-format="webp">WebP</button>
-                                <button class="format-btn" data-format="bmp">BMP</button>
-                                <button class="format-btn" data-format="tiff">TIFF</button>
+                            <div class="format-buttons" id="formatButtons">
+                                <!-- Dynamic format buttons will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <!-- QR/Barcode input -->
+                        <div class="text-input-section" id="textInputSection" style="display: none;">
+                            <h4>Enter Text:</h4>
+                            <textarea id="textInput" placeholder="Enter text for QR code or barcode..." rows="3"></textarea>
+                            <div class="input-options">
+                                <label>Size: <input type="number" id="sizeInput" value="300" min="100" max="1000"></label>
+                                <label>Error Level: 
+                                    <select id="errorLevelInput">
+                                        <option value="L">Low</option>
+                                        <option value="M" selected>Medium</option>
+                                        <option value="Q">Quartile</option>
+                                        <option value="H">High</option>
+                                    </select>
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -342,7 +471,7 @@
                         <h3 class="feature-title">Lightning Speed</h3>
                         <p class="feature-desc">AI-powered processing engine delivers results in seconds with quantum-level optimization.</p>
                         <div class="feature-stats">
-                            <span class="stat">3x Faster</span>
+                            <span class="stat">5x Faster</span>
                             <span class="stat">99.9% Uptime</span>
                         </div>
                     </div>
@@ -382,7 +511,7 @@
                         <p class="feature-desc">Seamless experience across all devices with responsive design and offline capabilities.</p>
                         <div class="feature-stats">
                             <span class="stat">All Devices</span>
-                            <span class="stat">Offline Mode</span>
+                            <span class="stat">50+ Formats</span>
                         </div>
                     </div>
                     <div class="feature-card" data-feature="batch">
@@ -394,21 +523,21 @@
                         <h3 class="feature-title">Batch Processing</h3>
                         <p class="feature-desc">Convert hundreds of files simultaneously with intelligent queue management.</p>
                         <div class="feature-stats">
-                            <span class="stat">1000+ Files</span>
+                            <span class="stat">100 Files</span>
                             <span class="stat">Smart Queue</span>
                         </div>
                     </div>
-                    <div class="feature-card" data-feature="premium">
+                    <div class="feature-card" data-feature="ai">
                         <div class="feature-background"></div>
                         <div class="feature-icon">
-                            <div class="icon-container">💎</div>
+                            <div class="icon-container">🤖</div>
                             <div class="icon-glow"></div>
                         </div>
-                        <h3 class="feature-title">Premium Experience</h3>
-                        <p class="feature-desc">Enterprise-grade features with 24/7 support and priority processing.</p>
+                        <h3 class="feature-title">AI-Powered OCR</h3>
+                        <p class="feature-desc">Advanced optical character recognition with 99.9% accuracy across 100+ languages.</p>
                         <div class="feature-stats">
-                            <span class="stat">24/7 Support</span>
-                            <span class="stat">Priority</span>
+                            <span class="stat">100+ Languages</span>
+                            <span class="stat">99.9% Accuracy</span>
                         </div>
                     </div>
                 </div>
@@ -426,14 +555,14 @@
                         Complete Conversion
                         <span class="gradient-text">Arsenal</span>
                     </h2>
-                    <p class="section-subtitle">Every tool you need for professional document transformation</p>
+                    <p class="section-subtitle">30+ professional tools for every document transformation need</p>
                 </div>
                 
                 <div class="tools-grid">
-                    <div class="tool-card premium-tool" data-tool="pdf-to-jpg">
+                    <div class="tool-card premium-tool" data-tool="pdf-converter">
                         <div class="tool-background"></div>
                         <div class="tool-header">
-                            <div class="tool-icon">📄→🖼️</div>
+                            <div class="tool-icon">📄</div>
                             <div class="tool-badges">
                                 <div class="tool-badge popular">Most Popular</div>
                                 <div class="tool-rating">
@@ -442,66 +571,26 @@
                                 </div>
                             </div>
                         </div>
-                        <h3 class="tool-title">PDF to JPG Converter</h3>
-                        <p class="tool-desc">Transform PDF pages into stunning high-resolution images with customizable DPI settings and batch processing capabilities.</p>
+                        <h3 class="tool-title">PDF Converter Suite</h3>
+                        <p class="tool-desc">Complete PDF transformation toolkit with AI-powered conversion to 20+ formats including images, documents, and web formats.</p>
                         <div class="tool-features">
-                            <div class="feature-item">
-                                <span class="feature-icon">⚡</span>
-                                <span class="feature-text">Batch conversion up to 1000 pages</span>
-                            </div>
                             <div class="feature-item">
                                 <span class="feature-icon">🎯</span>
-                                <span class="feature-text">Custom DPI up to 600</span>
+                                <span class="feature-text">OCR text recognition</span>
                             </div>
                             <div class="feature-item">
-                                <span class="feature-icon">📦</span>
-                                <span class="feature-text">Auto ZIP download</span>
+                                <span class="feature-icon">📊</span>
+                                <span class="feature-text">Batch processing</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">🔧</span>
+                                <span class="feature-text">Advanced options</span>
                             </div>
                         </div>
                         <div class="tool-stats">
                             <div class="stat-item">
-                                <span class="stat-number">1.2M+</span>
+                                <span class="stat-number">2.5M+</span>
                                 <span class="stat-label">Conversions</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number">2.3s</span>
-                                <span class="stat-label">Avg Time</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="tool-card" data-tool="jpg-to-pdf">
-                        <div class="tool-background"></div>
-                        <div class="tool-header">
-                            <div class="tool-icon">🖼️→📄</div>
-                            <div class="tool-badges">
-                                <div class="tool-badge smart">AI Smart</div>
-                                <div class="tool-rating">
-                                    <span class="stars">★★★★★</span>
-                                    <span class="rating-text">4.8</span>
-                                </div>
-                            </div>
-                        </div>
-                        <h3 class="tool-title">JPG to PDF Merger</h3>
-                        <p class="tool-desc">Intelligently merge multiple images into optimized PDFs with automatic sizing and compression.</p>
-                        <div class="tool-features">
-                            <div class="feature-item">
-                                <span class="feature-icon">🤖</span>
-                                <span class="feature-text">AI auto-resize and optimization</span>
-                            </div>
-                            <div class="feature-item">
-                                <span class="feature-icon">📋</span>
-                                <span class="feature-text">Drag & drop page ordering</span>
-                            </div>
-                            <div class="feature-item">
-                                <span class="feature-icon">📉</span>
-                                <span class="feature-text">Smart compression algorithms</span>
-                            </div>
-                        </div>
-                        <div class="tool-stats">
-                            <div class="stat-item">
-                                <span class="stat-number">850K+</span>
-                                <span class="stat-label">Merges</span>
                             </div>
                             <div class="stat-item">
                                 <span class="stat-number">1.8s</span>
@@ -510,161 +599,201 @@
                         </div>
                     </div>
                     
-                    <div class="tool-card" data-tool="pdf-to-docx">
+                    <div class="tool-card" data-tool="image-tools">
                         <div class="tool-background"></div>
                         <div class="tool-header">
-                            <div class="tool-icon">📄→📝</div>
+                            <div class="tool-icon">🖼️</div>
                             <div class="tool-badges">
-                                <div class="tool-badge ai">AI Powered</div>
-                                <div class="tool-rating">
-                                    <span class="stars">★★★★★</span>
-                                    <span class="rating-text">4.7</span>
-                                </div>
-                            </div>
-                        </div>
-                        <h3 class="tool-title">PDF to DOCX Editor</h3>
-                        <p class="tool-desc">Convert PDFs to fully editable Word documents with perfect layout preservation and text recognition.</p>
-                        <div class="tool-features">
-                            <div class="feature-item">
-                                <span class="feature-icon">🎨</span>
-                                <span class="feature-text">Perfect layout preservation</span>
-                            </div>
-                            <div class="feature-item">
-                                <span class="feature-icon">👁️</span>
-                                <span class="feature-text">Advanced OCR text recognition</span>
-                            </div>
-                            <div class="feature-item">
-                                <span class="feature-icon">📐</span>
-                                <span class="feature-text">Format and style retention</span>
-                            </div>
-                        </div>
-                        <div class="tool-stats">
-                            <div class="stat-item">
-                                <span class="stat-number">620K+</span>
-                                <span class="stat-label">Edits</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number">4.2s</span>
-                                <span class="stat-label">Avg Time</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="tool-card" data-tool="compress-pdf">
-                        <div class="tool-background"></div>
-                        <div class="tool-header">
-                            <div class="tool-icon">📉</div>
-                            <div class="tool-badges">
-                                <div class="tool-badge optimized">Optimized</div>
-                                <div class="tool-rating">
-                                    <span class="stars">★★★★★</span>
-                                    <span class="rating-text">4.9</span>
-                                </div>
-                            </div>
-                        </div>
-                        <h3 class="tool-title">PDF Compressor Pro</h3>
-                        <p class="tool-desc">Reduce file sizes dramatically while maintaining visual quality using advanced compression algorithms.</p>
-                        <div class="tool-features">
-                            <div class="feature-item">
-                                <span class="feature-icon">🧠</span>
-                                <span class="feature-text">Intelligent compression engine</span>
-                            </div>
-                            <div class="feature-item">
-                                <span class="feature-icon">🎛️</span>
-                                <span class="feature-text">Quality control settings</span>
-                            </div>
-                            <div class="feature-item">
-                                <span class="feature-icon">📊</span>
-                                <span class="feature-text">Real-time size preview</span>
-                            </div>
-                        </div>
-                        <div class="tool-stats">
-                            <div class="stat-item">
-                                <span class="stat-number">90%</span>
-                                <span class="stat-label">Size Reduction</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number">1.5s</span>
-                                <span class="stat-label">Avg Time</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tool-card" data-tool="excel-to-pdf">
-                        <div class="tool-background"></div>
-                        <div class="tool-header">
-                            <div class="tool-icon">📊→📄</div>
-                            <div class="tool-badges">
-                                <div class="tool-badge smart">Business</div>
+                                <div class="tool-badge smart">AI Smart</div>
                                 <div class="tool-rating">
                                     <span class="stars">★★★★★</span>
                                     <span class="rating-text">4.8</span>
                                 </div>
                             </div>
                         </div>
-                        <h3 class="tool-title">Excel to PDF</h3>
-                        <p class="tool-desc">Convert spreadsheets to professional PDFs with preserved formatting and data integrity.</p>
+                        <h3 class="tool-title">Image Processing Suite</h3>
+                        <p class="tool-desc">Professional image conversion, optimization, and transformation tools with AI-powered enhancement capabilities.</p>
                         <div class="tool-features">
                             <div class="feature-item">
-                                <span class="feature-icon">📊</span>
-                                <span class="feature-text">Preserve table formatting</span>
+                                <span class="feature-icon">🎨</span>
+                                <span class="feature-text">Format conversion</span>
                             </div>
                             <div class="feature-item">
-                                <span class="feature-icon">🎯</span>
-                                <span class="feature-text">Data integrity maintained</span>
+                                <span class="feature-icon">⚡</span>
+                                <span class="feature-text">Smart optimization</span>
                             </div>
                             <div class="feature-item">
-                                <span class="feature-icon">📋</span>
-                                <span class="feature-text">Multiple sheet support</span>
+                                <span class="feature-icon">📐</span>
+                                <span class="feature-text">Resize & crop</span>
                             </div>
                         </div>
                         <div class="tool-stats">
                             <div class="stat-item">
-                                <span class="stat-number">450K+</span>
+                                <span class="stat-number">1.8M+</span>
+                                <span class="stat-label">Images</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">0.9s</span>
+                                <span class="stat-label">Avg Time</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card" data-tool="office-suite">
+                        <div class="tool-background"></div>
+                        <div class="tool-header">
+                            <div class="tool-icon">📊</div>
+                            <div class="tool-badges">
+                                <div class="tool-badge optimized">Business</div>
+                                <div class="tool-rating">
+                                    <span class="stars">★★★★★</span>
+                                    <span class="rating-text">4.7</span>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="tool-title">Office Document Suite</h3>
+                        <p class="tool-desc">Complete Microsoft Office and Google Workspace document conversion with formatting preservation and data integrity.</p>
+                        <div class="tool-features">
+                            <div class="feature-item">
+                                <span class="feature-icon">📝</span>
+                                <span class="feature-text">Word documents</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">📊</span>
+                                <span class="feature-text">Excel spreadsheets</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">🎯</span>
+                                <span class="feature-text">Format preservation</span>
+                            </div>
+                        </div>
+                        <div class="tool-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">950K+</span>
+                                <span class="stat-label">Documents</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">2.1s</span>
+                                <span class="stat-label">Avg Time</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card" data-tool="web-tools">
+                        <div class="tool-background"></div>
+                        <div class="tool-header">
+                            <div class="tool-icon">🌐</div>
+                            <div class="tool-badges">
+                                <div class="tool-badge ai">Web Ready</div>
+                                <div class="tool-rating">
+                                    <span class="stars">★★★★★</span>
+                                    <span class="rating-text">4.8</span>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="tool-title">Web Format Suite</h3>
+                        <p class="tool-desc">Convert between web formats including HTML, Markdown, and structured data with developer-friendly options.</p>
+                        <div class="tool-features">
+                            <div class="feature-item">
+                                <span class="feature-icon">🌐</span>
+                                <span class="feature-text">HTML conversion</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">📝</span>
+                                <span class="feature-text">Markdown support</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">💻</span>
+                                <span class="feature-text">Developer tools</span>
+                            </div>
+                        </div>
+                        <div class="tool-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">650K+</span>
                                 <span class="stat-label">Conversions</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-number">3.1s</span>
+                                <span class="stat-number">1.2s</span>
                                 <span class="stat-label">Avg Time</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="tool-card" data-tool="merge-pdf">
+                    <div class="tool-card" data-tool="data-tools">
                         <div class="tool-background"></div>
                         <div class="tool-header">
-                            <div class="tool-icon">📄+📄</div>
+                            <div class="tool-icon">📋</div>
                             <div class="tool-badges">
-                                <div class="tool-badge optimized">Combine</div>
+                                <div class="tool-badge smart">Data</div>
                                 <div class="tool-rating">
                                     <span class="stars">★★★★★</span>
                                     <span class="rating-text">4.9</span>
                                 </div>
                             </div>
                         </div>
-                        <h3 class="tool-title">PDF Merger</h3>
-                        <p class="tool-desc">Seamlessly combine multiple PDF files into one document with intelligent page ordering.</p>
+                        <h3 class="tool-title">Data Conversion Suite</h3>
+                        <p class="tool-desc">Transform structured data between JSON, CSV, XML, and other formats with intelligent parsing and validation.</p>
                         <div class="tool-features">
                             <div class="feature-item">
-                                <span class="feature-icon">🔗</span>
-                                <span class="feature-text">Unlimited file merging</span>
+                                <span class="feature-icon">📊</span>
+                                <span class="feature-text">JSON ↔ CSV</span>
                             </div>
                             <div class="feature-item">
-                                <span class="feature-icon">📋</span>
-                                <span class="feature-text">Custom page ordering</span>
+                                <span class="feature-icon">🔍</span>
+                                <span class="feature-text">Data validation</span>
                             </div>
                             <div class="feature-item">
                                 <span class="feature-icon">⚡</span>
-                                <span class="feature-text">Batch processing</span>
+                                <span class="feature-text">Bulk processing</span>
                             </div>
                         </div>
                         <div class="tool-stats">
                             <div class="stat-item">
-                                <span class="stat-number">320K+</span>
-                                <span class="stat-label">Merges</span>
+                                <span class="stat-number">420K+</span>
+                                <span class="stat-label">Datasets</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-number">2.8s</span>
+                                <span class="stat-number">0.7s</span>
+                                <span class="stat-label">Avg Time</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tool-card" data-tool="generator-tools">
+                        <div class="tool-background"></div>
+                        <div class="tool-header">
+                            <div class="tool-icon">📱</div>
+                            <div class="tool-badges">
+                                <div class="tool-badge optimized">Generate</div>
+                                <div class="tool-rating">
+                                    <span class="stars">★★★★★</span>
+                                    <span class="rating-text">4.8</span>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="tool-title">Code Generator Suite</h3>
+                        <p class="tool-desc">Generate QR codes, barcodes, and other machine-readable codes with customizable options and high-quality output.</p>
+                        <div class="tool-features">
+                            <div class="feature-item">
+                                <span class="feature-icon">📱</span>
+                                <span class="feature-text">QR codes</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">📊</span>
+                                <span class="feature-text">Barcodes</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">🎨</span>
+                                <span class="feature-text">Custom styling</span>
+                            </div>
+                        </div>
+                        <div class="tool-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">380K+</span>
+                                <span class="stat-label">Generated</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">0.5s</span>
                                 <span class="stat-label">Avg Time</span>
                             </div>
                         </div>
@@ -692,12 +821,12 @@
                         <div class="testimonial-rating">
                             <span class="stars">★★★★★</span>
                         </div>
-                        <p class="testimonial-text">"This is hands down the best PDF converter I've ever used. The quality is incredible and it's lightning fast!"</p>
+                        <p class="testimonial-text">"This platform has revolutionized our document workflow. The 30+ conversion tools save us hours every day, and the quality is absolutely perfect!"</p>
                         <div class="testimonial-author">
                             <div class="author-avatar">👨‍💼</div>
                             <div class="author-info">
                                 <div class="author-name">Alex Johnson</div>
-                                <div class="author-title">Marketing Director</div>
+                                <div class="author-title">Operations Director</div>
                             </div>
                         </div>
                     </div>
@@ -707,12 +836,12 @@
                         <div class="testimonial-rating">
                             <span class="stars">★★★★★</span>
                         </div>
-                        <p class="testimonial-text">"The batch processing feature saved me hours of work. Converted 500+ files in minutes with perfect quality."</p>
+                        <p class="testimonial-text">"The AI-powered OCR is incredible! It accurately converts our scanned documents with 99.9% precision. The batch processing feature is a game-changer."</p>
                         <div class="testimonial-author">
                             <div class="author-avatar">👩‍💻</div>
                             <div class="author-info">
                                 <div class="author-name">Sarah Chen</div>
-                                <div class="author-title">Graphic Designer</div>
+                                <div class="author-title">Data Analyst</div>
                             </div>
                         </div>
                     </div>
@@ -722,7 +851,7 @@
                         <div class="testimonial-rating">
                             <span class="stars">★★★★★</span>
                         </div>
-                        <p class="testimonial-text">"Security and privacy are top-notch. I trust this with all my confidential documents."</p>
+                        <p class="testimonial-text">"Security and privacy are paramount for our legal documents. This platform's military-grade encryption gives us complete peace of mind."</p>
                         <div class="testimonial-author">
                             <div class="author-avatar">👨‍⚖️</div>
                             <div class="author-info">
@@ -748,7 +877,7 @@
                             </div>
                         </div>
                         <p class="footer-description">
-                            The world's most advanced PDF conversion platform, trusted by millions of professionals worldwide.
+                            The world's most comprehensive document conversion platform with 30+ professional tools, trusted by millions of users worldwide.
                         </p>
                     </div>
                     

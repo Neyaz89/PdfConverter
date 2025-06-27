@@ -1,4 +1,4 @@
-class PDFConverter {
+class DocumentConverter {
     constructor() {
         this.init();
         this.setupEventListeners();
@@ -12,14 +12,21 @@ class PDFConverter {
         this.uploadProgress = document.getElementById('uploadProgress');
         this.conversionOptions = document.getElementById('conversionOptions');
         this.formatSelection = document.getElementById('formatSelection');
+        this.formatButtons = document.getElementById('formatButtons');
+        this.textInputSection = document.getElementById('textInputSection');
+        this.textInput = document.getElementById('textInput');
         this.selectedFiles = [];
         this.selectedConversionType = null;
         this.selectedFormat = null;
+        this.processingInterval = null;
     }
 
     setupEventListeners() {
         // Upload zone interactions
         this.uploadZone.addEventListener('click', () => {
+            if (this.selectedConversionType && ['generate-qr', 'generate-barcode'].includes(this.selectedConversionType)) {
+                return; // Don't trigger file input for generators
+            }
             this.fileInput.click();
         });
 
@@ -50,17 +57,10 @@ class PDFConverter {
             });
         });
 
-        // Format selection buttons
-        document.querySelectorAll('.format-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.selectFormat(btn.dataset.format);
-            });
-        });
-
         // Tool cards
         document.querySelectorAll('.tool-card').forEach(card => {
             card.addEventListener('click', () => {
-                this.selectTool(card.dataset.tool);
+                this.scrollToConverter();
             });
         });
 
@@ -287,7 +287,7 @@ class PDFConverter {
                     <div class="demo-placeholder">
                         <div class="demo-play-button">▶</div>
                         <p>Demo video would play here</p>
-                        <p class="demo-description">See how easy it is to convert your documents with our advanced AI-powered tools.</p>
+                        <p class="demo-description">See how easy it is to convert your documents with our 30+ professional tools.</p>
                     </div>
                 </div>
             </div>
@@ -385,7 +385,7 @@ class PDFConverter {
                 setTimeout(() => {
                     option.style.opacity = '1';
                     option.style.transform = 'translateY(0) scale(1)';
-                }, index * 100);
+                }, index * 50);
             });
         }, 800);
     }
@@ -406,18 +406,61 @@ class PDFConverter {
         // Add selection confirmation animation
         this.showSelectionConfirmation(selectedBtn);
         
-        // Show format selection for image conversion
-        if (type === 'image-convert') {
-            this.formatSelection.style.display = 'block';
+        // Handle special conversion types
+        if (type === 'image-format') {
+            this.showFormatSelection(['jpeg', 'png', 'webp', 'bmp', 'tiff', 'gif']);
+            return;
+        } else if (type === 'pdf-to-image') {
+            this.showFormatSelection(['jpg', 'png', 'webp', 'tiff']);
+            return;
+        } else if (['generate-qr', 'generate-barcode'].includes(type)) {
+            this.showTextInput(type);
             return;
         } else {
             this.formatSelection.style.display = 'none';
+            this.textInputSection.style.display = 'none';
         }
         
-        // Auto-start conversion after selection
-        setTimeout(() => {
-            this.startConversion();
-        }, 1000);
+        // Auto-start conversion after selection for file-based conversions
+        if (this.selectedFiles.length > 0) {
+            setTimeout(() => {
+                this.startConversion();
+            }, 1000);
+        }
+    }
+
+    showFormatSelection(formats) {
+        this.formatSelection.style.display = 'block';
+        this.formatButtons.innerHTML = '';
+        
+        formats.forEach(format => {
+            const btn = document.createElement('button');
+            btn.className = 'format-btn';
+            btn.dataset.format = format;
+            btn.textContent = format.toUpperCase();
+            btn.addEventListener('click', () => this.selectFormat(format));
+            this.formatButtons.appendChild(btn);
+        });
+    }
+
+    showTextInput(type) {
+        this.textInputSection.style.display = 'block';
+        this.formatSelection.style.display = 'none';
+        
+        // Update upload zone for text input
+        const uploadContent = document.querySelector('.upload-content');
+        uploadContent.style.display = 'none';
+        
+        // Add generate button
+        if (!document.getElementById('generateBtn')) {
+            const generateBtn = document.createElement('button');
+            generateBtn.id = 'generateBtn';
+            generateBtn.className = 'primary-cta';
+            generateBtn.innerHTML = '<span>Generate</span>';
+            generateBtn.style.marginTop = '20px';
+            generateBtn.addEventListener('click', () => this.startConversion());
+            this.textInputSection.appendChild(generateBtn);
+        }
     }
 
     selectFormat(format) {
@@ -432,9 +475,11 @@ class PDFConverter {
         selectedBtn.classList.add('selected');
         
         // Start conversion after format selection
-        setTimeout(() => {
-            this.startConversion();
-        }, 500);
+        if (this.selectedFiles.length > 0) {
+            setTimeout(() => {
+                this.startConversion();
+            }, 500);
+        }
     }
 
     showSelectionConfirmation(button) {
@@ -470,62 +515,58 @@ class PDFConverter {
         }, 2000);
     }
 
-    selectTool(tool) {
-        // Enhanced tool selection with smooth scroll and highlight
-        this.scrollToConverter();
-        
-        // Show tool-specific message
-        setTimeout(() => {
-            this.showNotification(`${this.getToolName(tool)} selected! Upload your files to get started.`, 'info');
-        }, 1000);
-    }
-
-    getToolName(tool) {
-        const toolNames = {
-            'pdf-to-jpg': 'PDF to JPG Converter',
-            'jpg-to-pdf': 'JPG to PDF Merger',
-            'pdf-to-docx': 'PDF to DOCX Editor',
-            'docx-to-pdf': 'DOCX to PDF Converter',
-            'compress-pdf': 'PDF Compressor Pro',
-            'excel-to-pdf': 'Excel to PDF Converter',
-            'csv-to-pdf': 'CSV to PDF Converter',
-            'txt-to-pdf': 'Text to PDF Converter',
-            'merge-pdf': 'PDF Merger',
-            'split-pdf': 'PDF Splitter',
-            'image-convert': 'Image Format Converter'
-        };
-        return toolNames[tool] || 'Tool';
-    }
-
     startConversion() {
-        if (!this.selectedConversionType || this.selectedFiles.length === 0) {
+        if (!this.selectedConversionType) {
             return;
         }
 
-        // Check if image conversion requires format selection
-        if (this.selectedConversionType === 'image-convert' && !this.selectedFormat) {
-            this.showNotification('Please select an output format for image conversion.', 'warning');
+        // Check requirements based on conversion type
+        if (['generate-qr', 'generate-barcode'].includes(this.selectedConversionType)) {
+            const text = this.textInput.value.trim();
+            if (!text) {
+                this.showNotification('Please enter text for generation.', 'warning');
+                return;
+            }
+        } else if (this.selectedFiles.length === 0) {
+            this.showNotification('Please select files for conversion.', 'warning');
             return;
         }
 
-        // Create form data
-        const formData = new FormData();
-        
-        if (['jpg-to-pdf', 'merge-pdf'].includes(this.selectedConversionType)) {
-            this.selectedFiles.forEach(file => {
-                formData.append('files', file);
-            });
-        } else {
-            formData.append('file', this.selectedFiles[0]);
-        }
-
-        // Add format for image conversion
-        if (this.selectedConversionType === 'image-convert' && this.selectedFormat) {
-            formData.append('format', this.selectedFormat);
+        // Check format selection for specific conversions
+        if (['image-format', 'pdf-to-image'].includes(this.selectedConversionType) && !this.selectedFormat) {
+            this.showNotification('Please select an output format.', 'warning');
+            return;
         }
 
         // Show enhanced processing state
         this.showProcessingState();
+
+        // Prepare form data
+        const formData = new FormData();
+        
+        if (['generate-qr', 'generate-barcode'].includes(this.selectedConversionType)) {
+            // For generators, send text data
+            formData.append('text', this.textInput.value.trim());
+            formData.append('size', document.getElementById('sizeInput')?.value || '300');
+            formData.append('errorLevel', document.getElementById('errorLevelInput')?.value || 'M');
+            if (this.selectedFormat) {
+                formData.append('format', this.selectedFormat);
+            }
+        } else {
+            // For file conversions
+            if (['image-to-pdf', 'merge-pdf', 'create-archive'].includes(this.selectedConversionType)) {
+                this.selectedFiles.forEach(file => {
+                    formData.append('files', file);
+                });
+            } else {
+                formData.append('file', this.selectedFiles[0]);
+            }
+
+            // Add format for specific conversions
+            if (this.selectedFormat) {
+                formData.append('format', this.selectedFormat);
+            }
+        }
 
         // Make API call
         const endpoint = this.getEndpoint(this.selectedConversionType);
@@ -554,34 +595,52 @@ class PDFConverter {
 
     getEndpoint(type) {
         const endpoints = {
-            'pdf-to-jpg': '/convert/pdf-to-jpg',
-            'jpg-to-pdf': '/convert/jpg-to-pdf',
+            'pdf-to-image': '/convert/pdf-to-image',
+            'image-to-pdf': '/convert/image-to-pdf',
             'pdf-to-docx': '/convert/pdf-to-docx',
             'docx-to-pdf': '/convert/docx-to-pdf',
             'compress-pdf': '/convert/compress-pdf',
             'excel-to-pdf': '/convert/excel-to-pdf',
-            'csv-to-pdf': '/convert/csv-to-pdf',
-            'txt-to-pdf': '/convert/txt-to-pdf',
-            'image-convert': '/convert/image-convert',
+            'text-to-pdf': '/convert/text-to-pdf',
+            'html-to-pdf': '/convert/html-to-pdf',
+            'markdown-to-pdf': '/convert/markdown-to-pdf',
+            'pdf-to-html': '/convert/pdf-to-html',
+            'image-format': '/convert/image-format',
+            'optimize-image': '/convert/optimize-image',
             'merge-pdf': '/convert/merge-pdf',
-            'split-pdf': '/convert/split-pdf'
+            'split-pdf': '/convert/split-pdf',
+            'json-to-csv': '/convert/json-to-csv',
+            'csv-to-json': '/convert/csv-to-json',
+            'create-archive': '/convert/create-archive',
+            'extract-archive': '/convert/extract-archive',
+            'generate-qr': '/convert/generate-qr',
+            'generate-barcode': '/convert/generate-barcode'
         };
         return endpoints[type];
     }
 
     getFileName(type) {
         const fileNames = {
-            'pdf-to-jpg': 'converted-images.zip',
-            'jpg-to-pdf': 'merged-document.pdf',
-            'pdf-to-docx': 'editable-document.docx',
-            'docx-to-pdf': 'converted-document.pdf',
+            'pdf-to-image': `converted-images.${this.selectedFormat || 'jpg'}`,
+            'image-to-pdf': 'images-to-pdf.pdf',
+            'pdf-to-docx': 'pdf-converted.docx',
+            'docx-to-pdf': 'docx-converted.pdf',
             'compress-pdf': 'compressed-document.pdf',
-            'excel-to-pdf': 'excel-converted.pdf',
-            'csv-to-pdf': 'csv-converted.pdf',
-            'txt-to-pdf': 'text-converted.pdf',
-            'image-convert': `converted-image.${this.selectedFormat || 'jpg'}`,
+            'excel-to-pdf': 'spreadsheet-converted.pdf',
+            'text-to-pdf': 'text-converted.pdf',
+            'html-to-pdf': 'html-converted.pdf',
+            'markdown-to-pdf': 'markdown-converted.pdf',
+            'pdf-to-html': 'pdf-converted.html',
+            'image-format': `converted-image.${this.selectedFormat || 'jpg'}`,
+            'optimize-image': 'optimized-image.jpg',
             'merge-pdf': 'merged-document.pdf',
-            'split-pdf': 'split-pages.zip'
+            'split-pdf': 'split-pages.zip',
+            'json-to-csv': 'converted-data.csv',
+            'csv-to-json': 'converted-data.json',
+            'create-archive': 'archive.zip',
+            'extract-archive': 'extracted-files.zip',
+            'generate-qr': 'qr-code.png',
+            'generate-barcode': 'barcode.png'
         };
         return fileNames[type];
     }
@@ -595,6 +654,7 @@ class PDFConverter {
         
         this.conversionOptions.style.display = 'none';
         this.formatSelection.style.display = 'none';
+        this.textInputSection.style.display = 'none';
         this.uploadProgress.style.display = 'block';
         
         // Enhanced progress animation
@@ -687,6 +747,7 @@ class PDFConverter {
         this.uploadProgress.style.display = 'none';
         this.conversionOptions.style.display = 'none';
         this.formatSelection.style.display = 'none';
+        this.textInputSection.style.display = 'none';
         uploadContent.style.display = 'block';
         
         progressText.style.color = 'var(--primary-600)';
@@ -709,6 +770,17 @@ class PDFConverter {
         document.querySelectorAll('.format-btn').forEach(btn => {
             btn.classList.remove('selected');
         });
+
+        // Remove generate button if exists
+        const generateBtn = document.getElementById('generateBtn');
+        if (generateBtn) {
+            generateBtn.remove();
+        }
+
+        // Clear text input
+        if (this.textInput) {
+            this.textInput.value = '';
+        }
     }
 
     downloadFile(blob, filename) {
@@ -792,27 +864,12 @@ class PDFConverter {
         // Auto close after 5 seconds
         setTimeout(closeNotification, 5000);
     }
-
-    // Performance monitoring
-    trackConversion(type, fileSize, duration) {
-        // Analytics tracking would go here
-        console.log(`Conversion Analytics: ${type}, Size: ${fileSize}MB, Duration: ${duration}ms`);
-        
-        // Could integrate with analytics services like Google Analytics, Mixpanel, etc.
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'conversion_completed', {
-                'conversion_type': type,
-                'file_size': fileSize,
-                'duration': duration
-            });
-        }
-    }
 }
 
-// Initialize the application with enhanced features
+// Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    const converter = new PDFConverter();
-    window.pdfConverter = converter; // Make globally accessible
+    const converter = new DocumentConverter();
+    window.documentConverter = converter;
     
     // Add loading animation
     addLoadingAnimation();
@@ -823,15 +880,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup accessibility features
     setupAccessibility();
     
-    // Add performance monitoring
-    setupPerformanceMonitoring();
-    
     // Add CSS animations for notifications
     addNotificationStyles();
 });
 
 function addLoadingAnimation() {
-    // Enhanced loading animation
     const loadingOverlay = document.createElement('div');
     loadingOverlay.id = 'loading-overlay';
     loadingOverlay.innerHTML = `
@@ -845,7 +898,7 @@ function addLoadingAnimation() {
                 <div class="spinner-ring"></div>
                 <div class="spinner-ring"></div>
             </div>
-            <div class="loading-message">Loading premium experience...</div>
+            <div class="loading-message">Loading 30+ conversion tools...</div>
         </div>
     `;
     
@@ -880,41 +933,28 @@ function addLoadingAnimation() {
 }
 
 function setupKeyboardNavigation() {
-    // Enhanced keyboard navigation
     document.addEventListener('keydown', (e) => {
-        const converter = window.pdfConverter;
+        const converter = window.documentConverter;
         
         switch(e.key) {
             case 'Escape':
-                // Close any open modals or reset states
                 if (converter) {
                     converter.resetUploadState();
                 }
-                // Close notifications
                 document.querySelectorAll('.notification').forEach(notification => {
                     notification.querySelector('.notification-close').click();
                 });
                 break;
                 
             case 'Enter':
-                // Quick convert shortcut
                 if (e.ctrlKey || e.metaKey) {
                     e.preventDefault();
                     converter?.scrollToConverter();
                 }
                 break;
-                
-            case 'h':
-                // Help shortcut
-                if (e.ctrlKey || e.metaKey) {
-                    e.preventDefault();
-                    converter?.showDemo();
-                }
-                break;
         }
     });
     
-    // Add keyboard focus indicators
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Tab') {
             document.body.classList.add('keyboard-navigation');
@@ -927,7 +967,6 @@ function setupKeyboardNavigation() {
 }
 
 function setupAccessibility() {
-    // Enhanced accessibility features
     const uploadZone = document.getElementById('uploadZone');
     if (uploadZone) {
         uploadZone.setAttribute('role', 'button');
@@ -942,14 +981,12 @@ function setupAccessibility() {
         });
     }
     
-    // Add ARIA labels to interactive elements
     document.querySelectorAll('.option-btn').forEach((btn, index) => {
         btn.setAttribute('role', 'button');
         btn.setAttribute('tabindex', '0');
         btn.setAttribute('aria-label', `Select ${btn.querySelector('.option-title').textContent} conversion option`);
     });
     
-    // Add skip link for screen readers
     const skipLink = document.createElement('a');
     skipLink.href = '#main-content';
     skipLink.textContent = 'Skip to main content';
@@ -977,7 +1014,6 @@ function setupAccessibility() {
     
     document.body.insertBefore(skipLink, document.body.firstChild);
     
-    // Add main content landmark
     const mainContent = document.querySelector('.quick-convert');
     if (mainContent) {
         mainContent.id = 'main-content';
@@ -985,43 +1021,7 @@ function setupAccessibility() {
     }
 }
 
-function setupPerformanceMonitoring() {
-    // Performance monitoring and optimization
-    if ('performance' in window) {
-        window.addEventListener('load', () => {
-            const perfData = performance.getEntriesByType('navigation')[0];
-            console.log('Page Load Performance:', {
-                loadTime: perfData.loadEventEnd - perfData.loadEventStart,
-                domContentLoaded: perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart,
-                totalTime: perfData.loadEventEnd - perfData.fetchStart
-            });
-        });
-    }
-    
-    // Monitor conversion performance
-    const originalFetch = window.fetch;
-    window.fetch = function(...args) {
-        const startTime = performance.now();
-        return originalFetch.apply(this, args).then(response => {
-            const endTime = performance.now();
-            const duration = endTime - startTime;
-            
-            if (args[0].includes('/convert/')) {
-                console.log(`Conversion API Performance: ${duration.toFixed(2)}ms`);
-                window.pdfConverter?.trackConversion(
-                    args[0].split('/').pop(),
-                    0, // File size would be calculated from FormData
-                    duration
-                );
-            }
-            
-            return response;
-        });
-    };
-}
-
 function addNotificationStyles() {
-    // Add CSS for notifications and other dynamic elements
     const style = document.createElement('style');
     style.textContent = `
         @keyframes fadeIn {
@@ -1245,39 +1245,56 @@ function addNotificationStyles() {
             color: var(--primary-700);
         }
         
-        /* Mobile menu styles */
+        .text-input-section {
+            margin-top: var(--space-8);
+            padding-top: var(--space-8);
+            border-top: 2px solid var(--neutral-200);
+        }
+        
+        .text-input-section h4 {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--neutral-800);
+            margin-bottom: var(--space-4);
+        }
+        
+        .text-input-section textarea {
+            width: 100%;
+            padding: var(--space-4);
+            border: 2px solid var(--neutral-300);
+            border-radius: var(--radius-lg);
+            font-size: var(--font-size-base);
+            resize: vertical;
+            margin-bottom: var(--space-4);
+        }
+        
+        .text-input-section textarea:focus {
+            outline: none;
+            border-color: var(--primary-500);
+        }
+        
+        .input-options {
+            display: flex;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+            margin-bottom: var(--space-4);
+        }
+        
+        .input-options label {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-weight: 500;
+        }
+        
+        .input-options input,
+        .input-options select {
+            padding: var(--space-2);
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--radius-md);
+        }
+        
         @media (max-width: 768px) {
-            .nav-links {
-                position: fixed;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(20px);
-                flex-direction: column;
-                padding: var(--space-6);
-                gap: var(--space-4);
-                transition: var(--transition-normal);
-                border-top: 1px solid rgba(255, 255, 255, 0.2);
-            }
-            
-            .nav-links.mobile-open {
-                top: 100%;
-                display: flex;
-            }
-            
-            .mobile-menu-toggle.active span:nth-child(1) {
-                transform: rotate(45deg) translate(5px, 5px);
-            }
-            
-            .mobile-menu-toggle.active span:nth-child(2) {
-                opacity: 0;
-            }
-            
-            .mobile-menu-toggle.active span:nth-child(3) {
-                transform: rotate(-45deg) translate(7px, -6px);
-            }
-            
             .format-buttons {
                 flex-direction: column;
                 align-items: center;
@@ -1286,11 +1303,15 @@ function addNotificationStyles() {
             .format-btn {
                 width: 200px;
             }
+            
+            .input-options {
+                flex-direction: column;
+            }
         }
     `;
     
     document.head.appendChild(style);
 }
 
-// Export for global access if needed
-window.PDFConverter = PDFConverter;
+// Export for global access
+window.DocumentConverter = DocumentConverter;
